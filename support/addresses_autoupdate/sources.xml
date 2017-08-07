@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<sources>
+    <country>
+        <name>RU</name>
+        <url>http://fias.nalog.ru/Public/Downloads/20170227/BASE.7Z</url>
+    </country>
+    <country>
+        <name>UA</name>
+        <url>http://www.ukrstat.gov.ua/klasf/st_kls/koatuu.zip</url>
+    </country>
+</sources>

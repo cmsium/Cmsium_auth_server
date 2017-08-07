@@ -1,0 +1,10 @@
+.DS_Store
+/.idea/*
+/.vagrant/*
+support/migration_tool/migration_history.csv
+Vagrantfile
+ubuntu_package.box
+storage
+support/addresses_autoupdate/storage
+support/addresses_autoupdate/tmp
+support/parser/config.xml
