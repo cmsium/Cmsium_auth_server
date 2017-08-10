@@ -69,3 +69,8 @@ BEGIN
     EXECUTE stmt;
     DEALLOCATE PREPARE stmt;
   END;
+
+CREATE PROCEDURE getUserRoles(IN idUser VARCHAR(32))
+  BEGIN
+    SELECT * FROM  roles_in_users AS riu JOIN roles ON riu.role_id = roles.id WHERE riu.user_id = idUser;
+  END;

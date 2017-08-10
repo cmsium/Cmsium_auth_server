@@ -23,4 +23,5 @@ function require_all($dir, $depth=0) {
     }
 }
 
-require_all(ROOTDIR."/app");
+require_all(ROOTDIR."/app/lib");
+require_once ROOTDIR.'/app/Controller.php';

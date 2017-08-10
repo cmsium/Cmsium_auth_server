@@ -532,8 +532,7 @@ class User {
      * Get all allowed roles
      * @return mixed Roles array|false
      */
-    public static function getAllRoles()
-    {
+    public static function getAllRoles() {
         $conn = DBConnection::getInstance();
         $query = "CALL getRoles();";
         $result = $conn->performQueryFetchAll($query);
@@ -859,6 +858,13 @@ class User {
                     }
                 }
             }
+            foreach ($params_array['roles'] as $value) {
+                $query = "INSERT INTO roles_in_users(role_id, user_id) VALUES ($value, '$user_id');";
+                if (!$conn->performQuery($query)) {
+                    $conn->rollback();
+                    return false;
+                }
+            }
             $query_user_props = "INSERT INTO user_properties(" . implode(", ", $user_props_columns) . ", user_id) 
                              VALUES(" . implode(", ", $user_props_values) . ",'$user_id');";
             if (!$conn->performQuery($query_user_props)) {
@@ -870,6 +876,13 @@ class User {
         } else {
             return false;
         }
+    }
+
+    public static function getUserRoles($user_id) {
+        $conn = DBConnection::getInstance();
+        $query = "CALL getUserRoles('$user_id');";
+        $result = $conn->performQueryFetchAll($query);
+        return $result ?: false;
     }
 
     /**

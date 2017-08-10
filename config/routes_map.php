@@ -9,5 +9,6 @@ $routes = [
     '/register/submit/json' => 'registerUserJSON',
     '/logout' => 'logoutUser',
     '/logout/json' => 'logoutUserJSON',
-    '/token/check' => 'checkToken'
+    '/token/check' => 'checkToken',
+    '/info/roles' => 'getUserRolesJSON'
 ];

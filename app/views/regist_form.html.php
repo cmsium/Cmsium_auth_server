@@ -51,16 +51,15 @@
         <input onfocusout="validate_alpha()" type="date" name="birth_date"><br>
         <label>Место рождения: </label>
         <input onfocusout="validate_alpha()" id="address_field" type="text" name="birthplace"><br>
-        <!--<label>Роль: </label>-->
-        <!--<select name="roles[]" multiple><option value="1">оператор системы</option>-->
-            <!--<option value="2">учитель</option>-->
-            <!--<option value="3">Доцент без степени</option>-->
-            <!--<option value="4">член Творческого Союза</option>-->
-            <!--<option value="9">заказчик</option>-->
-            <!--<option value="11">студент</option>-->
-            <!--<option value="12">мать</option>-->
-            <!--<option value="13">отец</option></select>-->
-        <!--<br>-->
+        <label>Роль: </label>
+        <select name="roles[]" multiple>
+            <?php
+                foreach ($roles as $role) {
+                    echo "<option value=\"{$role['id']}\">{$role['t_name']}</option>";
+                }
+            ?>
+        </select>
+        <br>
         <label><input type="submit" value="Send" class="active"></label>
     </form>
 </div>
