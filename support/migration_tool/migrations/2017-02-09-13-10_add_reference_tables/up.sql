@@ -1,0 +1,2 @@
+CREATE TABLE system_references (table_name varchar(255) NOT NULL, column_name varchar(255) NOT NULL, module_name varchar(255) NOT NULL) ENGINE=InnoDB;
+INSERT INTO system_references (table_name, column_name, module_name) VALUES ('user_properties', 'birthplace', 'address_object');

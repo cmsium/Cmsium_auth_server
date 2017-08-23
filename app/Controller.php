@@ -2,6 +2,7 @@
 class Controller {
 
     private static $instance;
+    public static $user_id;
 
     public static function getInstance(){
         if (!(self::$instance instanceof self)) {
@@ -210,6 +211,120 @@ class Controller {
         } else {
             return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']], JSON_UNESCAPED_UNICODE);
         }
+    }
+
+    function allUsers() {
+        // TODO: Authorization
+        $validator = Validator::getInstance();
+        $data = $validator->ValidateAllByMask($_GET, 'usersMask');
+        if ($data === FALSE) {
+            return USERS_FILTER_VALIDATION_ERROR['text'];
+        }
+        if (isset($_GET['start'])){
+            $start = (int)$_GET['start'];
+        } else {
+            $start = 0;
+        }
+        $offset = PAGES_OFFSET;
+        $user_data = User::getAllWithFilters($data,$start,$offset);
+        include ROOTDIR.'/app/views/all_users.html.php';
+    }
+
+    function showUser() {
+        // TODO: Authorization
+        if ($_GET['id']) {
+            $ref_handler = ReferenceHandler::getInstance();
+            $user_data = User::find($_GET['id']);
+            $roles = explode(", ",$user_data['roles']);
+            $converter = DataConverter::getInstance();
+            $user_props = [];
+            foreach ($roles as $role){
+                $role_data = User::readProps($_GET['id'],User::getPropsTableName($role));
+                $country_iso = '';
+                if ($role_data) {
+                    foreach ($role_data as $column_name => $value) {
+                        if (ReferenceHandler::getRefModule($role.'_properties', $column_name) == 'address_country')
+                            $country_iso = $value;
+                        $props = ['userfiles' => ['object_props' => [], 'method_props' => [$value, true]],
+                            'address_object' => ['object_props' => [],
+                                'method_props' => [$country_iso,$value, true]],
+                            'address_country' => ['object_props' => [$value], 'method_props' => []],
+                            'full_address_object' => ['object_props' => [],
+                                'method_props' => [$country_iso,$value, true]]];
+                        $instance = $ref_handler->build($role.'_properties', $column_name, 'read', $props);
+                        if ($instance) {
+                            $role_data[$column_name] = $instance->getData();
+                        }
+                    }
+                }
+                $file = new File(ROOTDIR."/app/lib/users/xml/generated_roles_schemas/$role.xml");
+                $xml_array = $converter->XMLToArray($file->getContent());
+                $result_xml_array = [];
+                if (isset($xml_array['item'][0])) {
+                    foreach ($xml_array['item'] as $column) {
+                        $result_xml_array[] = [
+                            'column_name' => $column['t_column_name'],
+                            'column_value' => $role_data[$column['column_name']],
+                            'column_type' => $column['column_type']['name']
+                        ];
+                    }
+                } else {
+                    $result_xml_array[] = [
+                        'column_name' => $xml_array['item']['t_column_name'],
+                        'column_value' => $role_data[$xml_array['item']['column_name']],
+                        'column_type' => $xml_array['item']['column_type']['name']
+                    ];
+                }
+                $user_props = array_merge($user_props, $result_xml_array);
+            }
+            $user_data['props'] = $user_props;
+            include ROOTDIR.'/app/views/show_user.html.php';
+        } else {
+            return USER_PARAM_ABSENT['text'];
+        }
+    }
+
+    function createUserForm() {
+        // TODO: Authorization
+        $roles = User::getAllRoles();
+        include ROOTDIR.'/app/views/create_user_form.html.php';
+    }
+
+    function updateMenu() {
+        // TODO: Authorization
+        if ($_SERVER['REQUEST_METHOD'] == 'GET' and isset($_GET['id'])){
+            $id = $_GET['id'];
+            User::setData($id);
+            $roles = User::getRoles(true);
+            $roles[] = ['role'=>'user_properties'];
+            include ROOTDIR.'/app/views/user_update_menu.html.php';
+        }
+    }
+
+    function updateForm() {
+        // TODO: Authorization
+        if (isset($_GET['id'])) {
+            User::setData($_GET['id']);
+            $user_data = User::getInfo();
+            include ROOTDIR.'/app/views/update_user_form.html.php';
+        } else {
+            return USER_PARAM_ABSENT['text'];
+        }
+    }
+
+    function updateUser() {
+        // TODO: Authorization
+        $validator = Validator::getInstance();
+        $data = $validator->ValidateAllByMask($_POST,'updateMask');
+        if (!$data)
+            return UPDATE_VALIDATION_ERROR['text'];
+        $data['roles'] = $_POST['roles'];
+        $id = $_POST['user_id'];
+        unset($data['user_id']);
+        if (User::update($id, $data))
+            return UPDATE_SUCCESS['text'];
+        else
+            return UPDATE_ERROR['text'];
     }
 
 }

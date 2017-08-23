@@ -210,19 +210,19 @@ class User {
      */
     public static function setData($id) {
         $conn = DBConnection::getInstance();
-        $ref_handler = ReferenceHandler::getInstance();
+//        $ref_handler = ReferenceHandler::getInstance();
         $query = "CALL setUserData('$id');";
         $data = $conn->performQueryFetch($query);
         $data['user_id'] = $id;
-        $props = ['address_object' => ['object_props' => [], 'method_props' => ['643',$data['birthplace']]]];
-        $instance = $ref_handler->build("user_properties", 'birthplace', 'read', $props);
-        if ($instance) {
-            $data['birthplace'] = $instance->getData();
-        }
-        $data['birthplace'] = [
-            'value' => implode(', ',$data['birthplace']),
-            'mask' => implode(',',array_keys($data['birthplace']))
-        ];
+//        $props = ['address_object' => ['object_props' => [], 'method_props' => ['643',$data['birthplace']]]];
+//        $instance = $ref_handler->build("user_properties", 'birthplace', 'read', $props);
+//        if ($instance) {
+//            $data['birthplace'] = $instance->getData();
+//        }
+//        $data['birthplace'] = [
+//            'value' => implode(', ',$data['birthplace']),
+//            'mask' => implode(',',array_keys($data['birthplace']))
+//        ];
         self::$data = $data;
     }
 

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<users><t_role_name>оператор системы</t_role_name><role_name>staff</role_name><item><t_column_name>должность</t_column_name><column_name>position</column_name><column_type><t_name>varchar</t_name><name>varchar</name><props>150</props><constraints/></column_type></item></users>

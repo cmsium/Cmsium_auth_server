@@ -157,9 +157,9 @@ class Masks{
         'email' => ['func' => 'E_Mail',
                     'props' => [],
                     'required' => true],
-         'birthplace' => ['func'=>'ListOfAlphaNumerics',
-                          'props'=>['min' => 3, 'max' => 255],
-                          'required' => true]],
+         'birthplace' => ['func' => 'CirrLatName',
+             'props' => ['min' => 2, 'max' => 128],
+             'required' => true]],
 
     'updateEventFilesMask'=>[
         'event_id' => ['func' => 'Md5Type',

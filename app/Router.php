@@ -32,8 +32,9 @@ class Router {
      * @param $uri string Requested URI
      */
     public function executeAction($uri) {
-        if (array_key_exists($uri, $this->routes)) {
-            $action = $this->routes[$uri];
+        $parsed_uri = parse_url($uri);
+        if (array_key_exists($parsed_uri['path'], $this->routes)) {
+            $action = $this->routes[$parsed_uri['path']];
         } else {
             readfile(ROOTDIR.'/app/views/404.html');
             exit;
