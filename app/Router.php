@@ -35,12 +35,38 @@ class Router {
         $parsed_uri = parse_url($uri);
         if (array_key_exists($parsed_uri['path'], $this->routes)) {
             $action = $this->routes[$parsed_uri['path']];
+            $method = $action[0];
+            if (isset($action['auth'])) {
+                if (!$this->checkAuth($action['auth'])) {
+                    echo AUTH_ERROR['text'];
+                    exit;
+                }
+            }
         } else {
             readfile(ROOTDIR.'/app/views/404.html');
             exit;
         }
         $controller = Controller::getInstance();
-        echo $controller->$action();
+        echo $controller->$method();
+    }
+
+    private function checkAuth($roles) {
+        if (Cookie::checkToken()) {
+            $token_raw = $_COOKIE['token'];
+            $auth = UserAuth::getInstance();
+            if (!$user_id = $auth->check($token_raw)) {
+                return false;
+            }
+            if ($roles != [0]) {
+                if (!$auth->checkSelfRoles($roles, $user_id)) {
+                    return false;
+                }
+            }
+            Controller::$user_id = $user_id;
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

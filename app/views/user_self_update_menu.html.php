@@ -29,12 +29,9 @@
 <body>
 <div id="node_001" class="admin">
     <ul>
-        <li><a href="/users">Пользователи</a></li>
-        <li><a href="/users/create">Создание пользователя</a></li>
-        <li><a href="/users/new_role">Создать новую роль</a></li>
-        <li><a href="/users/delete_role">Удалить роль</a></li>
-        <li><a href="/users/actions_to_role_page">Установка разрешений на роли</a></li>
-        <li><a href="/users/actions_out_of_role_page">Удаление разрешений на роли</a></li>
+        <li><a href="/users/dashboard/show">Информация о себе</a></li>
+        <li><a href="/users/dashboard/update_menu">Редактировать информацию о себе</a></li>
+        <li><a href="/users/dashboard/password">Сменить пароль</a></li>
     </ul>
 </div>
 <div id="node_003" class="users">
@@ -42,9 +39,9 @@
     <?php
     foreach ($roles as $item) {
         if ($item['role'] == 'user_properties') {
-            echo "<li><a href='/users/edit?id=$id'>Редактировать информацию пользователя</a></li>";
+            echo "<li><a href='/users/dashboard/edit'>Редактировать основную информацию</a></li>";
         } else {
-            echo "<li><a href='/users/edit/props?id=$id&role={$item['role']}'>Редактировать информацию \"{$item['t_role']}\"</a></li>";
+            echo "<li><a href='/users/dashboard/edit/props?role={$item['role']}'>Редактировать информацию \"{$item['t_role']}\"</a></li>";
         }
     }
     ?>

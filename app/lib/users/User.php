@@ -763,7 +763,7 @@ class User {
         $converter = DataConverter::getInstance();
         $result = $converter->arrayToXML($user_data, 'users', $keys);
         if (!$result) {
-            ErrorHandler::throwException(ARRAY_TO_XML_CONVERT_ERROR);
+            return false;
         }
         return $result;
     }

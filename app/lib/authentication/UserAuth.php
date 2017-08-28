@@ -80,8 +80,10 @@ class UserAuth{
      * @param array $allowed_roles Allowed roles
      * @return bool
      */
-    public function checkSelfRoles($allowed_roles){
-        $user_id = Cookie::getUserId();
+    public function checkSelfRoles($allowed_roles, $user_id = false){
+        if ($user_id) {
+            $user_id = Cookie::getUserId();
+        }
         User::setData($user_id);
         $roles = User::getRoles(true);
         $roles_id=[];

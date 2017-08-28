@@ -40,6 +40,11 @@
         <label>Пароль: </label>
         <input onfocusout="validate_alphanumeric()" type="password" name="password"><br>
         <br>
+        <?php
+        if ($uri) {
+            echo "<input type=\"hidden\" name=\"redirect_uri\" value=\"$uri\">";
+        }
+        ?>
         <label><input type="submit" value="Отправить" class="active"></label>
     </form>
 </div>

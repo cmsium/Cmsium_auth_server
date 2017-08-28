@@ -144,11 +144,10 @@ class UsersXMLGenerator {
             }
         }
         User::$props_data = $user_data;
-        $engine = Engine::getInstance();
-        $document = simplexml_load_file(ROOTDIR."/app/modules/users/xml/generated_roles_schemas/$role.xml");
+        $document = simplexml_load_file(ROOTDIR."/app/lib/users/xml/generated_roles_schemas/$role.xml");
         $document->addChild('user_id', $id);
         $xml = $document->asXML();
-        $result_string = $engine->xmlStrTransform($xml, 'users/xsl/builders/update_form_builder.xsl');
+        $result_string = Controller::xmlStrTransform($xml, 'users/xsl/builders/update_form_builder.xsl');
         return $result_string;
     }
 
@@ -201,11 +200,10 @@ class UsersXMLGenerator {
             }
         }
         User::$props_data = $user_data;
-        $engine = Engine::getInstance();
-        $document = simplexml_load_file(ROOTDIR."/app/modules/users/xml/generated_roles_schemas/$role.xml");
+        $document = simplexml_load_file(ROOTDIR."/app/lib/users/xml/generated_roles_schemas/$role.xml");
         $document->addChild('user_id', $id);
         $xml = $document->asXML();
-        $result_string = $engine->xmlStrTransform($xml, 'users/xsl/builders/self_update_form_builder.xsl');
+        $result_string = Controller::xmlStrTransform($xml, 'users/xsl/builders/self_update_form_builder.xsl');
         return $result_string;
     }
 

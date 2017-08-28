@@ -38,17 +38,18 @@
     </ul>
 </div>
 <div id="node_003" class="users">
-<ul>
-    <?php
-    foreach ($roles as $item) {
-        if ($item['role'] == 'user_properties') {
-            echo "<li><a href='/users/edit?id=$id'>Редактировать информацию пользователя</a></li>";
-        } else {
-            echo "<li><a href='/users/edit/props?id=$id&role={$item['role']}'>Редактировать информацию \"{$item['t_role']}\"</a></li>";
-        }
-    }
-    ?>
-</ul>
+    <form action="/users/destroy_role" method="GET" name="formname" id="form_id" class="form">
+        <h1 class="header">Удаление ролей</h1>
+        <label>Роль</label>
+        <select name="role">
+            <?php
+            foreach (User::getAllRoles() as $role) {
+                echo "<option value=\"{$role['id']}\">{$role['t_name']}</option>";
+            }
+            ?>
+        </select>
+        <label><input type="submit" value="Отправить" class="active"></label>
+    </form>
 </div>
 </body>
 </html>

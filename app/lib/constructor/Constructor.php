@@ -275,7 +275,7 @@ class Constructor {
         $schema_array[$type_name] = $type_schema;
         $string_array = $this->buildSchemaArray($schema_array);
         $result_content = sprintf(static::$schema_pattern, $string_array);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_class_module."/classes/".static::$schema_class.".php");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_class_module."/".static::$schema_class.".php");
         return $file->write($result_content);
     }
 
@@ -293,7 +293,7 @@ class Constructor {
         }
         $string_array = static::buildSchemaArray($schema_array);
         $result_content = sprintf(static::$schema_pattern, $string_array);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_class_module."/classes/".static::$schema_class.".php");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_class_module."/".static::$schema_class.".php");
         return $file->write($result_content);
     }
 
@@ -313,7 +313,7 @@ class Constructor {
         unset($schema_array[$type_name]);
         $string_array = $this->buildSchemaArray($schema_array);
         $result_content = sprintf(static::$schema_pattern, $string_array);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_class_module."/classes/".static::$schema_class.".php");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_class_module."/".static::$schema_class.".php");
         $file->write($result_content);
         return true;
     }
@@ -342,7 +342,7 @@ class Constructor {
 
     public function destroyXML() {
         $type_name = $this->type_name;
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$type_name}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$type_name}.xml");
         $file->delete();
     }
 
@@ -378,7 +378,7 @@ class Constructor {
         }
         $class = static::$entity_class;
         $xml = $class::toXML($result_array, false);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$result_array['type_name']}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$result_array['type_name']}.xml");
         $file->write($xml);
         return true;
     }
@@ -386,7 +386,7 @@ class Constructor {
 
     public function updateXML($data_array) {
         $converter = DataConverter::getInstance();
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
         $xml_array = $converter->XMLToArray($file->getContent());
         foreach ($data_array['model'] as $column) {
             $raw_array['t_column_name'] = $column[1];
@@ -411,14 +411,14 @@ class Constructor {
         unset($xml_array['item']);
         $class = static::$entity_class;
         $xml = $class::toXML($xml_array, false);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
         $file->write($xml);
         return true;
     }
 
     public function updateXMLdelete($columns) {
         $converter = DataConverter::getInstance();
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
         $xml_array = $converter->XMLToArray($file->getContent());
         foreach ($columns as $column) {
             foreach ($xml_array['item'] as $key => $value){
@@ -431,7 +431,7 @@ class Constructor {
         unset($xml_array['item']);
         $class = static::$entity_class;
         $xml = $class::toXML($xml_array, false);
-        $file = new File(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
         $file->write($xml);
         return true;
     }
@@ -509,12 +509,12 @@ class Constructor {
     }
 
     public static function clearSchemas() {
-        $xmls = glob(ROOTDIR."/app/modules/".static::$schema_path_module."/xml/".static::$schemas_path."/*.xml"); // get all file names
+        $xmls = glob(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/*.xml"); // get all file names
         foreach($xmls as $file){ // iterate files
             if(is_file($file))
                 unlink($file); // delete file
         }
-        $document_schema = ROOTDIR."/app/modules/".static::$schema_class_module."/classes/".static::$schema_class.".php";
+        $document_schema = ROOTDIR."/app/lib/".static::$schema_class_module."/classes/".static::$schema_class.".php";
         if(is_file($document_schema))
             unlink($document_schema);
     }
