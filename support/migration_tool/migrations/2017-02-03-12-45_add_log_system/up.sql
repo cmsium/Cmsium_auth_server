@@ -10,7 +10,8 @@ CREATE TABLE system_log
 CREATE TABLE system_actions
 (
   action_id VARCHAR(32) PRIMARY KEY NOT NULL,
-  name VARCHAR(64) NOT NULL
+  name VARCHAR(64) NOT NULL,
+  service_name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE roles_in_actions

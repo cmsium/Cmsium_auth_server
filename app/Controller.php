@@ -209,28 +209,31 @@ class Controller {
         }
     }
 
-    function getUserRolesJSON() {
+    /**
+     * POST: [user_token, service_name, action]
+     *
+     * @return string
+     */
+    function checkPermission() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $validator = Validator::getInstance();
-            $data = $validator->ValidateAllByMask($_POST, 'tokenValidation');
+            $data = $validator->ValidateAllByMask($_POST, 'checkPermissionsValidation');
             if (!$data) {
-                return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']], JSON_UNESCAPED_UNICODE);
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
             }
             $auth = UserAuth::getInstance();
             if ($user_id = $auth->check($data['token'])) {
-                if (!$roles_result_array = User::getUserRoles($user_id)) {
-                    return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']], JSON_UNESCAPED_UNICODE);
+                // Check permissions
+                if ($auth->checkActionPermissions($data['action'][0], $data['service_name'], $user_id)) {
+                    return json_encode(['status' => 'ok']);
+                } else {
+                    return json_encode(['status' => 'error', 'message' => PERMISSIONS_ERROR['text']],JSON_UNESCAPED_UNICODE);
                 }
-                $result_array = [];
-                foreach ($roles_result_array as $row) {
-                    $result_array[] = [$row['name'], $row['t_name']];
-                }
-                return json_encode(['status' => 'ok', 'roles' => $result_array],JSON_UNESCAPED_UNICODE);
             } else {
-                return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']], JSON_UNESCAPED_UNICODE);
+                return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']],JSON_UNESCAPED_UNICODE);
             }
         } else {
-            return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']], JSON_UNESCAPED_UNICODE);
+            return json_encode(['status' => 'error', 'message' => POST_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -680,6 +683,10 @@ class Controller {
         }
         return POST_DATA_ABSENT['text'];
     }
+
+    // Permissions
+
+
 
     // Transformers
 

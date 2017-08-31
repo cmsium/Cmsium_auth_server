@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+    <service>
+        <name>cmsium_auth</name>
+        <host>auth-dev-uklad.center</host>
+        <manifest>/manifest.xml</manifest>
+    </service>
+    <service>
+        <name>Cmsium_controller</name>
+        <host>192.168.200.10</host>
+        <manifest>/manifest.xml</manifest>
+    </service>
+</services>

@@ -340,6 +340,18 @@ class Masks{
             'token' => ['func' => 'AlphaNumeric',
                 'props' => ['min' => 64, 'max' => 64],
                 'required' => true]
+        ],
+
+        'checkPermissionsValidation' => [
+            'token' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 64, 'max' => 64],
+                'required' => true],
+            'service_name' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 50],
+                'required' => true],
+            'action' => ['func' => 'ValueFromRegexList',
+                'props' => ['list' => ['^[\w\/]+$']],
+                'required' => true]
         ]
 
     ];

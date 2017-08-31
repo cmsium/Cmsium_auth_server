@@ -81,7 +81,7 @@ class UserAuth{
      * @return bool
      */
     public function checkSelfRoles($allowed_roles, $user_id = false){
-        if ($user_id) {
+        if (!$user_id) {
             $user_id = Cookie::getUserId();
         }
         User::setData($user_id);
@@ -140,6 +140,38 @@ class UserAuth{
         $query = "CALL clearAuthToken('$token');";
         $conn->performQuery($query);
         return true;
+    }
+
+    /**
+     * Call custom check action permissions function
+     *
+     * @param string $action Current action
+     * @param string|bool $user_id User id
+     * @return bool Check permissions status
+     */
+    public function checkActionPermissions($action, $service_name, $user_id = false){
+        $roles = $this->getRoles($action, $service_name);
+        if (!$roles) return false;
+        return $this->checkSelfRoles($roles, $user_id);
+    }
+
+    /**
+     * Get allowed to action roles list
+     *
+     * @param string $action Current action
+     * @return array|bool Roles array
+     */
+    public function getRoles($action, $service_name) {
+        $conn = DBConnection::getInstance();
+        $query = "SELECT * FROM system_actions WHERE name = '$action' AND service_name = '$service_name';";
+        $result =  $conn->performQueryFetch($query);
+        if (!$result)
+            return false;
+        $query = "CALL getActionRoles('{$result['action_id']}');";
+        $result =  $conn->performQueryFetch($query);
+        if (!$result)
+            return false;
+        return explode(',',$result['roles']);
     }
 
     /**

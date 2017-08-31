@@ -1,6 +1,7 @@
 <?php
 
 $routes = [
+    '/manifest' => ['getManifest'],
     // Basic API calls
     '/' => ['loginForm'],
     '/login/submit' => ['loginUser'],
@@ -11,7 +12,7 @@ $routes = [
     '/logout' => ['logoutUser'],
     '/logout/json' => ['logoutUserJSON'],
     '/token/check' => ['checkToken'],
-    '/info/roles' => ['getUserRolesJSON'],
+    '/permissions/check' => ['checkPermission'],
     // Users web interface
     '/users' => ['allUsers', 'auth' => [1]],
     '/users/show' => ['showUser', 'auth' => [1]],
