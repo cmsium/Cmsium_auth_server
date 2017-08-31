@@ -2,7 +2,7 @@
 <services>
     <service>
         <name>cmsium_auth</name>
-        <host>auth-dev-uklad.center</host>
+        <host>192.168.200.13</host>
         <manifest>/manifest.xml</manifest>
     </service>
     <service>
