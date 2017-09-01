@@ -152,6 +152,7 @@ class UserAuth{
     public function checkActionPermissions($action, $service_name, $user_id = false){
         $roles = $this->getRoles($action, $service_name);
         if (!$roles) return false;
+        if ($roles[0] == 0) return true;
         return $this->checkSelfRoles($roles, $user_id);
     }
 
@@ -168,7 +169,7 @@ class UserAuth{
         if (!$result)
             return false;
         $query = "CALL getActionRoles('{$result['action_id']}');";
-        $result =  $conn->performQueryFetch($query);
+        $result = $conn->performQueryFetch($query);
         if (!$result)
             return false;
         return explode(',',$result['roles']);

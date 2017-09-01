@@ -8,6 +8,11 @@
     <service>
         <name>Cmsium_controller</name>
         <host>192.168.200.10</host>
-        <manifest>/manifest.xml</manifest>
+        <manifest>/controller.xml</manifest>
+    </service>
+    <service>
+        <name>Cmsium_sandbox</name>
+        <host>192.168.200.10</host>
+        <manifest>/sandbox.xml</manifest>
     </service>
 </services>

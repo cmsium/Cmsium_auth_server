@@ -26,7 +26,8 @@ CREATE PROCEDURE getUser(IN idUser VARCHAR(32))
       INNER JOIN phones AS p ON bus.id_user = p.user_id
       JOIN roles_in_users AS riu ON bus.id_user = riu.user_id
       JOIN roles AS r ON riu.role_id = r.id
-    WHERE bus.id_user = idUser;
+    WHERE bus.id_user = idUser
+    GROUP BY id_user;
   END;
 CREATE PROCEDURE getAllUsers(IN Start INTEGER, IN myOffset INTEGER)
   BEGIN
@@ -38,15 +39,16 @@ CREATE PROCEDURE getAllUsers(IN Start INTEGER, IN myOffset INTEGER)
       LEFT JOIN roles AS r ON riu.role_id = r.id
     GROUP BY bus.id_user LIMIT Start,myOffset;
   END;
-CREATE PROCEDURE `setUserData`(IN idUser VARCHAR(32))
-BEGIN
+CREATE PROCEDURE setUserData(IN idUser VARCHAR(32))
+  BEGIN
     SELECT *,GROUP_CONCAT(DISTINCT roles.id SEPARATOR ', ') AS roles_id, GROUP_CONCAT(DISTINCT roles.name SEPARATOR ', ') AS roles,GROUP_CONCAT(DISTINCT roles.t_name SEPARATOR ', ') AS t_roles
     FROM  user_properties as props
       INNER JOIN phones ON  props.user_id = phones.user_id
       INNER JOIN emails ON props.user_id = emails.user_id
       JOIN roles_in_users AS riu ON props.user_id = riu.user_id
       JOIN roles  ON riu.role_id = roles.id
-    WHERE props.user_id = idUser;
+    WHERE props.user_id = idUser
+    GROUP BY username;
   END;
 CREATE PROCEDURE checkUserRole(IN idRole INT(11), IN idUser VARCHAR(32))
   BEGIN

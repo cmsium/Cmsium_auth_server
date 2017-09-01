@@ -27,6 +27,9 @@ function writeToDB($action_name, $auth_string, $service_name) {
                 }
             }
         }
+    } else {
+        $query = "INSERT INTO roles_in_actions(id_role, action_id) VALUES (0, '$id');";
+        $conn->performQuery($query);
     }
 }
 
@@ -40,7 +43,7 @@ function writeRecursive($method, $parent, $service_name) {
             } else {
                 $writable_action = substr($full_action, 0, -1);
             }
-            var_dump($writable_action);
+            //var_dump($writable_action);
             // Write to db
             writeToDB($writable_action, $item['auth'], $service_name);
             // Call next
@@ -54,7 +57,7 @@ function writeRecursive($method, $parent, $service_name) {
         } else {
             $writable_action = substr($full_action, 0, -1);
         }
-        var_dump($writable_action);
+        //var_dump($writable_action);
         // Write to db
         writeToDB($writable_action, $method['auth'], $service_name);
         // Call next
