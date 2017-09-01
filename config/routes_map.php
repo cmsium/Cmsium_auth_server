@@ -1,9 +1,9 @@
 <?php
 
 $routes = [
-    '/manifest' => ['getManifest'],
     // Basic API calls
     '/' => ['loginForm'],
+    '/login' => ['loginForm'],
     '/login/submit' => ['loginUser'],
     '/login/submit/json' => ['loginUserJSON'],
     '/register' => ['registerForm'],

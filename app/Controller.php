@@ -44,7 +44,7 @@ class Controller {
                     return DATA_FORMAT_ERROR['text'];
                 }
             }
-            if ($auth->login()) {
+            if ($auth->login(true, $uri)) {
                 if (isset($uri)) {
                     $headers = HeadersController::getInstance();
                     $headers->respondLocation(['value' => $uri]);

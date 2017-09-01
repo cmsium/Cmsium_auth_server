@@ -99,7 +99,7 @@ class UserAuth{
     /**
      * Login user
      */
-    public function login($set_cookie = true) {
+    public function login($set_cookie = true, $uri = false) {
         $validator = Validator::getInstance();
         $conn = DBConnection::getInstance();
         if ($validator->ValidateAllByMask($_POST, 'authMask')) {
@@ -108,10 +108,14 @@ class UserAuth{
                 $user_id = $user_presence['id_user'];
                 $token = $this->generateToken($user_id);
                 if ($set_cookie) {
-                    $cookie = new Cookie(['name' => 'token',
+                    $domain = $uri ? parse_url($uri, PHP_URL_HOST) : '';
+                    $cookie = new Cookie([
+                        'name' => 'token',
                         'value' => $token.$user_id,
                         'expire' => time()+TOKEN_LIFETIME,
-                        'path' => '/']);
+                        'path' => '/',
+                        'domain' => $domain
+                        ]);
                     $cookie->set();
                 }
                 $query = "CALL writeAuthToken('$user_id','$token');";
