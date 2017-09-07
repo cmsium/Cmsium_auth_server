@@ -13,6 +13,7 @@ $routes = [
     '/logout/json' => ['logoutUserJSON'],
     '/token/check' => ['checkToken'],
     '/permissions/check' => ['checkPermission'],
+    '/test/mailer' => ['checkMailer'],
     // Users web interface
     '/users' => ['allUsers', 'auth' => [1]],
     '/users/show' => ['showUser', 'auth' => [1]],

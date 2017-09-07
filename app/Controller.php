@@ -44,7 +44,7 @@ class Controller {
                     return DATA_FORMAT_ERROR['text'];
                 }
             }
-            if ($auth->login(true, $uri)) {
+            if ($auth->login()) {
                 if (isset($uri)) {
                     $headers = HeadersController::getInstance();
                     $headers->respondLocation(['value' => $uri]);
@@ -235,6 +235,11 @@ class Controller {
         } else {
             return json_encode(['status' => 'error', 'message' => POST_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
         }
+    }
+
+    function checkMailer() {
+        require ROOTDIR.'/vendor/autoload.php';
+        echo 'Hello';
     }
 
     // User control web interface
