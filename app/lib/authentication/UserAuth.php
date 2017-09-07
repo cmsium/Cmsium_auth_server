@@ -109,13 +109,15 @@ class UserAuth{
                 $token = $this->generateToken($user_id);
                 if ($set_cookie) {
                     $domain = '.'.Config::get('main_domain');
-                    $cookie = new Cookie([
+                    $params = [
                         'name' => 'token',
                         'value' => $token.$user_id,
                         'expire' => time()+TOKEN_LIFETIME,
                         'path' => '/',
                         'domain' => $domain
-                        ]);
+                    ];
+                    var_dump($params);
+                    $cookie = new Cookie($params);
                     $cookie->set();
                 }
                 $query = "CALL writeAuthToken('$user_id','$token');";
