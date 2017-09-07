@@ -138,7 +138,14 @@ class UserAuth{
         $conn = DBConnection::getInstance();
         if ($raw_token === false) {
             $raw_token = Cookie::getToken() . Cookie::getUserId();
-            $cookie = new Cookie(['name' => 'token', 'value' => null, 'expire' => -1, 'path' => '/']);
+            $domain = Config::get('main_domain');
+            $cookie = new Cookie([
+                'name' => 'token',
+                'value' => null,
+                'expire' => -1,
+                'path' => '/',
+                'domain' => $domain
+                ]);
             $cookie->set();
         }
         $token = $this->getAuthInfo($raw_token)['token'];
