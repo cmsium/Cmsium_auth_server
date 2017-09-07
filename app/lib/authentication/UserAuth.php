@@ -108,7 +108,7 @@ class UserAuth{
                 $user_id = $user_presence['id_user'];
                 $token = $this->generateToken($user_id);
                 if ($set_cookie) {
-                    $domain = '.'.Config::get('main_domain');
+                    $domain = Config::get('main_domain');
                     $params = [
                         'name' => 'token',
                         'value' => $token.$user_id,
@@ -116,7 +116,6 @@ class UserAuth{
                         'path' => '/',
                         'domain' => $domain
                     ];
-                    var_dump($params);
                     $cookie = new Cookie($params);
                     $cookie->set();
                 }
