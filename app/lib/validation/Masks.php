@@ -66,40 +66,37 @@ class Masks{
                         'required' => true]],
 
 
-     'outerRegistMask' => [
-         'username' => ['func' => 'CirrLatName',
-                        'props' => ['min' => 3, 'max' => 64],
-                        'required' => true],
-        'password' => ['func' => 'AlphaNumeric',
-                        'props' => ['min' => 3, 'max' => 15],
-                        'required' => true],
-        'password_repeat' => ['func' => 'AlphaNumeric',
-                                'props' => ['min' => 3, 'max' => 15],
-                                'required' => true],
-        'firstname' => ['func' => 'CirrLatName',
-                        'props' => ['min' => 3, 'max' => 15],
-                        'required' => true],
-        'lastname' => ['func' => 'CirrLatName',
-                        'props' => ['min' => 3, 'max' => 15],
-                        'required' => true],
-        'middlename' => ['func' => 'CirrLatName',
-                        'props' => ['min' => 3, 'max' => 15],
-                        'required' => true],
-        'birth_date' => ['func' => 'DateType',
-                        'props' => ['format' => 'Y-m-d', 'output' => 'string'],
-                        'required' => true],
-        'phone' => ['func' => 'StrNumbers',
-                        'props' => ['min' => 7, 'max' => 11],
-                        'required' => true],
-        'email' => ['func' => 'E_Mail',
-                    'props' => [],
-                    'required' => true],
-        'birthplace' => ['func' => 'Text',
-                        'props' => ['min' => 3, 'max' => 100, 'except' => "<>\*="],
-                        'required' => true],
-        'roles' => ['func' => 'Roles',
-                    'props' => ['list' => ["1"]],
-                    'required' => true],],
+        'outerRegistMask' => [
+            'username' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 64],
+                'required' => true],
+            'password' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 3, 'max' => 15],
+                'required' => true],
+            'password_repeat' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 3, 'max' => 15],
+                'required' => true],
+            'email' => ['func' => 'E_Mail',
+                'props' => [],
+                'required' => true],
+            'phone' => ['func' => 'StrNumbers',
+                'props' => ['min' => 7, 'max' => 11],
+                'required' => true],
+            'firstname' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 15],
+                'required' => true],
+            'lastname' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 15],
+                'required' => true],
+            'middlename' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 15],
+                'required' => true],
+            'birth_date' => ['func' => 'DateType',
+                'props' => ['format' => 'Y-m-d', 'output' => 'string'],
+                'required' => true],
+            'birthplace' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 32],
+                'required' => true]],
 
 
      'registFromFileMask' => [
@@ -352,6 +349,41 @@ class Masks{
             'action' => ['func' => 'ValueFromRegexList',
                 'props' => ['list' => ['^[\w\/]+$']],
                 'required' => true]
+        ],
+
+        'checkPermissionIdValidation' => [
+            'token' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 64, 'max' => 64],
+                'required' => true],
+            'action' => ['func' => 'Md5Type',
+                'props' => [],
+                'required' => true]
+        ],
+
+        'checkFindUserValidation' => [
+            'id' => ['func' => 'Md5Type',
+                'props' => [],
+                'required' => true],
+            'string' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 1, 'max' => 7],
+                'required' => false],
+            'format' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 1, 'max' => 32],
+                'required' => false],
+        ],
+
+        'checkAllUsersJSONValidation' => [
+            'start' => ['func'=>'StrNumbers','props'=>['min' => 1, 'max' => 64],'required'=>true],
+            'limit' => ['func'=>'StrNumbers','props'=>['min' => 1, 'max' => 64],'required'=>true],
+        ],
+
+        'checkUserPropsJSONValidation' => [
+            'user_id' => ['func' => 'Md5Type',
+                'props' => [],
+                'required' => true],
+            'table_name' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 1, 'max' => 64],
+                'required' => false],
         ]
 
     ];

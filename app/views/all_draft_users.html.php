@@ -1,4 +1,3 @@
-
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -40,42 +39,26 @@
     </ul>
 </div>
 <div id="node_003" class="users">
-    <form action="/users/update" method="post" accept-charset="UTF-8" name="update_form" id="form_id" class="form">
-        <h1 class="header">Редактирование пользователя</h1>
-        <br>
+    <table style="width:100%">
+        <tr>
+            <th>Ник</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th>Действия</th>
+        </tr>
         <?php
-        echo "<input onfocusout=\"validate_alphanumeric()\" value=\"{$user_data['user_id']}\" type=\"hidden\" name=\"user_id\"><br>
-        <label>Имя пользователя: </label>
-        <input onfocusout=\"validate_alphanumeric()\" value=\"{$user_data['username']}\" type=\"text\" name=\"username\"><br>
-        <label>E-Mail: </label>
-        <input onfocusout=\"validate_e-mail()\" value=\"{$user_data['email']}\" type=\"text\" name=\"email\"><br>
-        <label>Телефон: </label>
-        <input onfocusout=\"validate_digital()\" value=\"{$user_data['phone']}\" type=\"text\" name=\"phone\"><br>
-        <label>Имя: </label>
-        <input onfocusout=\"validate_alpha()\" value=\"{$user_data['firstname']}\" type=\"text\" name=\"firstname\"><br>
-        <label>Фамилия: </label>
-        <input onfocusout=\"validate_alpha()\" value=\"{$user_data['lastname']}\" type=\"text\" name=\"lastname\"><br>
-        <label>Отчество: </label>
-        <input onfocusout=\"validate_alpha()\" value=\"{$user_data['middlename']}\" type=\"text\" name=\"middlename\"><br>
-        <label>Дата рождения: </label>
-        <input onfocusout=\"validate_alpha()\" value=\"{$user_data['birth_date']}\" type=\"date\" name=\"birth_date\"><br>
-        <label>Место рождения: </label>
-        <input value=\"{$user_data['birthplace']}\" type=\"text\" name=\"birthplace\"><br>
-        <label>Роль: </label>
-        <select name=\"roles[]\" multiple>";
-
-        foreach (User::getAllRoles() as $role) {
-            if (User::checkRole($role['id'])) {
-                echo "<option value=\"{$role['id']}\" selected='selected'>{$role['t_name']}</option>";
-            } else {
-                echo "<option value=\"{$role['id']}\">{$role['t_name']}</option>";
+            foreach ($user_data as $user) {
+                echo "<tr>";
+                echo "<td>{$user['username']}</td>";
+                echo "<td>{$user['lastname']}</td>";
+                echo "<td>{$user['firstname']}</td>";
+                echo "<td>{$user['middlename']}</td>";
+                echo "<td>[<a href='/users/draft/activate?user_id={$user['user_id']}'>Активировать</a>]";
+                echo "</tr>";
             }
-        }
         ?>
-        </select>
-        <br>
-        <label><input type="submit" value="Send" class="active"></label>
-    </form>
+    </table>
 </div>
 </body>
 </html>

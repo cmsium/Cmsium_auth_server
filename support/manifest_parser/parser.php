@@ -1,6 +1,7 @@
 <?php
 require '../../config/init_libs.php';
 $converter = DataConverter::getInstance();
+$conn = DBConnection::getInstance();
 
 function writeToDB($action_name, $auth_string, $service_name) {
     $conn = DBConnection::getInstance();
@@ -64,6 +65,11 @@ function writeRecursive($method, $parent, $service_name) {
         if (isset($method['method'])) writeRecursive($method['method'], $full_action, $service_name);
     }
 }
+
+$query = "TRUNCATE TABLE system_actions;";
+$conn->performQuery($query);
+$query = "TRUNCATE TABLE roles_in_actions;";
+$conn->performQuery($query);
 
 $services = simplexml_load_file(ROOTDIR.'/config/microservices.xml');
 foreach ($services as $item) {

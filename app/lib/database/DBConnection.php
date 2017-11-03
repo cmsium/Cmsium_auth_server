@@ -23,7 +23,7 @@ class DBConnection {
         $password = Config::get('password');
         $conn = new mysqli($host, $username, $password, $dbname, $port);
         if ($conn->connect_errno) {
-            ErrorHandler::throwException(ERROR_DB_CONNECTION);
+            echo $conn->connect_error;
         }
         $conn->set_charset('utf8');
         $this->conn = $conn;

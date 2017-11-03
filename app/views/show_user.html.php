@@ -31,12 +31,12 @@
 <body>
 <div id="node_001" class="admin">
     <ul>
-        <li><a href="/users">Пользователи</a></li>
+        <?php echo '<li><a href="http://'.Config::get('main_domain').'/users/first_menu_page">Главная</a></li>' ?><li><a href="/users">Пользователи</a></li>
         <li><a href="/users/create">Создание пользователя</a></li>
         <li><a href="/users/new_role">Создать новую роль</a></li>
         <li><a href="/users/delete_role">Удалить роль</a></li>
         <li><a href="/users/actions_to_role_page">Установка разрешений на роли</a></li>
-        <li><a href="/users/actions_out_of_role_page">Удаление разрешений на роли</a></li>
+        <li><a href="/users/actions_out_of_role_page">Удаление разрешений на роли</a></li><li><a href="/users/draft">Новые пользователи</a></li>
     </ul>
 </div>
 <div id="node_003" class="users">

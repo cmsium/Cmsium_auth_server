@@ -165,7 +165,7 @@ class PHPMailer
      *
      * @var string
      */
-    public $Mailer = 'mail';
+    public $Mailer = 'Mailer';
 
     /**
      * The path to the sendmail program.
@@ -827,7 +827,7 @@ class PHPMailer
      */
     public function isMail()
     {
-        $this->Mailer = 'mail';
+        $this->Mailer = 'Mailer';
     }
 
     /**
@@ -1273,7 +1273,7 @@ class PHPMailer
     public function preSend()
     {
         if ('smtp' == $this->Mailer or
-            ('mail' == $this->Mailer and stripos(PHP_OS, 'WIN') === 0)
+            ('Mailer' == $this->Mailer and stripos(PHP_OS, 'WIN') === 0)
         ) {
             //SMTP mandates RFC-compliant line endings
             //and it's also used with mail() on Windows
@@ -1284,7 +1284,7 @@ class PHPMailer
         }
         //Check for buggy PHP versions that add a header with an incorrect line break
         if (ini_get('mail.add_x_header') == 1
-            and 'mail' == $this->Mailer
+            and 'Mailer' == $this->Mailer
             and stripos(PHP_OS, 'WIN') === 0
             and ((version_compare(PHP_VERSION, '7.0.0', '>=')
                     and version_compare(PHP_VERSION, '7.0.17', '<'))
@@ -1353,7 +1353,7 @@ class PHPMailer
 
             // To capture the complete message when using mail(), create
             // an extra header list which createHeader() doesn't fold in
-            if ('mail' == $this->Mailer) {
+            if ('Mailer' == $this->Mailer) {
                 if (count($this->to) > 0) {
                     $this->mailHeader .= $this->addrAppend('To', $this->to);
                 } else {
@@ -1407,7 +1407,7 @@ class PHPMailer
                     return $this->sendmailSend($this->MIMEHeader, $this->MIMEBody);
                 case 'smtp':
                     return $this->smtpSend($this->MIMEHeader, $this->MIMEBody);
-                case 'mail':
+                case 'Mailer':
                     return $this->mailSend($this->MIMEHeader, $this->MIMEBody);
                 default:
                     $sendMethod = $this->Mailer.'Send';
@@ -2138,14 +2138,14 @@ class PHPMailer
 
         // To be created automatically by mail()
         if ($this->SingleTo) {
-            if ('mail' != $this->Mailer) {
+            if ('Mailer' != $this->Mailer) {
                 foreach ($this->to as $toaddr) {
                     $this->SingleToArray[] = $this->addrFormat($toaddr);
                 }
             }
         } else {
             if (count($this->to) > 0) {
-                if ('mail' != $this->Mailer) {
+                if ('Mailer' != $this->Mailer) {
                     $result .= $this->addrAppend('To', $this->to);
                 }
             } elseif (count($this->cc) == 0) {
@@ -2162,7 +2162,7 @@ class PHPMailer
 
         // sendmail and mail() extract Bcc from the header before sending
         if ((
-            'sendmail' == $this->Mailer or 'qmail' == $this->Mailer or 'mail' == $this->Mailer
+            'sendmail' == $this->Mailer or 'qmail' == $this->Mailer or 'Mailer' == $this->Mailer
             )
             and count($this->bcc) > 0
         ) {
@@ -2174,7 +2174,7 @@ class PHPMailer
         }
 
         // mail() sets the subject itself
-        if ('mail' != $this->Mailer) {
+        if ('Mailer' != $this->Mailer) {
             $result .= $this->headerLine('Subject', $this->encodeHeader($this->secureHeader($this->Subject)));
         }
 
@@ -2265,7 +2265,7 @@ class PHPMailer
             }
         }
 
-        if ('mail' != $this->Mailer) {
+        if ('Mailer' != $this->Mailer) {
             $result .= static::$LE;
         }
 
@@ -2474,7 +2474,7 @@ class PHPMailer
                     throw new Exception($this->lang('extension_missing') . 'openssl');
                 }
                 // @TODO would be nice to use php://temp streams here
-                $file = tempnam(sys_get_temp_dir(), 'mail');
+                $file = tempnam(sys_get_temp_dir(), 'Mailer');
                 if (false === file_put_contents($file, $body)) {
                     throw new Exception($this->lang('signing') . ' Could not write temp file');
                 }
@@ -2905,7 +2905,7 @@ class PHPMailer
 
         //RFCs specify a maximum line length of 78 chars, however mail() will sometimes
         //corrupt messages with headers longer than 65 chars. See #818
-        $lengthsub = 'mail' == $this->Mailer ? 13: 0;
+        $lengthsub = 'Mailer' == $this->Mailer ? 13: 0;
         $maxlen = static::STD_LINE_LENGTH - $lengthsub;
         // Try to select the encoding which should produce the shortest output
         if ($matchcount > strlen($str) / 3) {

@@ -83,26 +83,23 @@ class Controller {
      * @return string HTML page
      */
     function registerForm() {
-        $roles = User::getAllRoles();
         include ROOTDIR.'/app/views/regist_form.html.php';
     }
 
-    /**
-     * Register user using data from POST
-     *
-     * @return string Plain HTML message
-     */
-    function registerUser() {
+    function registerUserOuter() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $validator = Validator::getInstance();
-            $data = $validator->ValidateAllByMask($_POST, 'registMask');
+            $data = $validator->ValidateAllByMask($_POST, 'outerRegistMask');
             if (!$data)
                 return CREATE_VALIDATION_ERROR['text'];
-            $data['roles'] = $_POST['roles'];
             if ($_POST['password'] != $_POST['password_repeat'])
                 return PASSWORD_CHECK_ERROR['text'];
-            if (User::create($data)){
-                return CREATE_SUCCESS['text'];
+            if ($user_id = User::createOuter($data)){
+                if (User::sendVerificationMail($user_id, $data['email'])) {
+                    return CREATE_SUCCESS['text'];
+                } else {
+                    return CREATE_ERROR['text'];
+                }
             }
             else
                 return CREATE_ERROR['text'];
@@ -237,9 +234,109 @@ class Controller {
         }
     }
 
+    /**
+     * POST: [user_token, action_id]
+     *
+     * @return string
+     */
+    function checkPermissionId() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_POST, 'checkPermissionIdValidation');
+            if (!$data) {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+            $auth = UserAuth::getInstance();
+            if ($user_id = $auth->check($data['token'])) {
+                // Check permissions
+                if ($auth->checkActionPermissionsById($data['action'], $user_id)) {
+                    return json_encode(['status' => 'ok']);
+                } else {
+                    return json_encode(['status' => 'error', 'message' => PERMISSIONS_ERROR['text']],JSON_UNESCAPED_UNICODE);
+                }
+            } else {
+                return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => POST_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+
+    function activateAccount() {
+        if ($_GET['code']) {
+            $validator = Validator::getInstance();
+            $code = $validator->Check('Md5Type',$_GET['code'],[]);
+            return User::checkActivationCode($code);
+        } else {
+            return USER_PARAM_ABSENT['text'];
+        }
+    }
+
     function checkMailer() {
-        require ROOTDIR.'/vendor/autoload.php';
-        echo 'Hello';
+        $mail = Mailer::getInstance();
+        $content = '<html>
+<body>
+    <h1>Welcome!</h1>
+    <p>To our perfect website!</p>
+    <p>rly??</p>
+</body>
+</html>';
+        if ($mail->send('gren236@gmail.com', 'Hello there!', $content)) {
+            echo 'Mail sent!';
+        } else {
+            echo 'Mail not sent! :(';
+        }
+    }
+
+    function getUserData() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $validator = Validator::getInstance();
+            $id = $validator->Check('Md5Type',$_GET['id'],[]);
+            if ($id) {
+                return User::getDataJSON($id);
+            } else {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    function findUserJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_GET, 'checkFindUserValidation');
+            if ($data) {
+                $data['string'] = $data['string'] === 'true' ? true : false;
+                $data['format'] = $data['format'] ?? 'dafault';
+                return json_encode(User::find($data['id'], $data['string'], $data['format']), JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    function allUsersJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_GET, 'checkAllUsersJSONValidation');
+            if ($data) {
+                return json_encode(User::getAll((int)$data['start'], (int)$data['limit']), JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    function getUserPropsJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_GET, 'checkUserPropsJSONValidation');
+            if ($data) {
+                return json_encode(User::readProps($data['user_id'], $data['table_name'], false), JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        }
     }
 
     // User control web interface
@@ -316,6 +413,29 @@ class Controller {
     function createUserForm() {
         $roles = User::getAllRoles();
         include ROOTDIR.'/app/views/create_user_form.html.php';
+    }
+
+    /**
+     * Register user using data from POST
+     *
+     * @return string Plain HTML message
+     */
+    function registerUser() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_POST, 'registMask');
+            if (!$data)
+                return CREATE_VALIDATION_ERROR['text'];
+            $data['roles'] = $_POST['roles'];
+            if ($_POST['password'] != $_POST['password_repeat'])
+                return PASSWORD_CHECK_ERROR['text'];
+            if (User::create($data)){
+                return CREATE_SUCCESS['text'];
+            }
+            else
+                return CREATE_ERROR['text'];
+        }
+        return POST_DATA_ABSENT['text'];
     }
 
     function updateMenu() {
@@ -689,9 +809,28 @@ class Controller {
         return POST_DATA_ABSENT['text'];
     }
 
-    // Permissions
+    // Draft users interface
 
+    function allDraftUsers() {
+        $user_data = User::getAllDraftUsers();
+        include ROOTDIR.'/app/views/all_draft_users.html.php';
+    }
 
+    function activateDraftUser() {
+        if (isset($_GET['user_id'])) {
+            $validator = Validator::getInstance();
+            $user_id= $validator->Check('Md5Type',$_GET['user_id'],[]);
+            if (!$user_id)
+                return DATA_FORMAT_ERROR['text'];
+            if (User::activateDraftUser($user_id)) {
+                return 'Пользователь успешно активирован!';
+            } else {
+                return USER_ACTIVATION_FAILED['text'];
+            }
+        } else {
+            return GET_DATA_ABSENT['text'];
+        }
+    }
 
     // Transformers
 

@@ -1,0 +1,2 @@
+<?xml version="1.0"?>
+<users><t_type_name>&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;</t_type_name><type_name>polzovatel</type_name><t_role_name>&#x43F;&#x43E;&#x43B;&#x44C;&#x437;&#x43E;&#x432;&#x430;&#x442;&#x435;&#x43B;&#x44C;</t_role_name><role_name>polzovatel</role_name><item><t_column_name>&#x442;&#x435;&#x441;&#x442;</t_column_name><column_name>test</column_name><column_type><t_name>int</t_name><name>int</name><props/><constraints/></column_type></item></users>

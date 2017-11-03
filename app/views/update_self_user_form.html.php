@@ -30,9 +30,13 @@
 <body>
 <div id="node_001" class="admin">
     <ul>
-        <li><a href="/users/dashboard/show">Информация о себе</a></li>
+        <?php echo '<li><a href="http://'.Config::get('main_domain').'/users/first_menu_page">Главная</a></li>' ?><li><a href="/users/dashboard/show">Информация о себе</a></li>
         <li><a href="/users/dashboard/update_menu">Редактировать информацию о себе</a></li>
         <li><a href="/users/dashboard/password">Сменить пароль</a></li>
+        <?php
+        echo '<li><a href="http://'.Config::get('main_domain').'/portfolio/select_event">Портфолио</a></li>
+        <li><a href="http://'.Config::get('main_domain').'/portfolio/create_event_page">Создать новое событие</a></li>';
+        ?>
     </ul>
 </div>
 <div id="node_003" class="users">

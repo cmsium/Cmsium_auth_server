@@ -141,3 +141,9 @@ define ('FILES_PREVIEW_SIZE',100);
  * Sandbox files expired time (in minutes)
  */
 define('SANDBOX_FILES_EXPIRE_TIME',60);
+
+define('SMTP_DEBUG', 2);
+define('SMTP_FROM', 'no-reply');
+define('SMTP_NAME', 'Uklad Ukladoff');
+
+define('V_CODE_LIFETIME', 43200);

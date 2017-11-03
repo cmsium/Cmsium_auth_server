@@ -99,3 +99,7 @@ define ("DESTROY_DOCUMENT_TYPE_ERROR",['code' => 194, 'text' => 'Невозмо�
 define ("CREATE_DIFF_ERROR",['code' => 195, 'text' => 'Server side error']);
 define ("READ_DIFF_ERROR",['code' => 196, 'text' => 'Server side error']);
 define ("INVALID_ACTION",['code' => 197, 'text' => 'Недопустимое действие!']);
+define ("CODE_NOT_FOUND",['code' => 198, 'text' => 'Указанный код не найден!']);
+define ("CODE_NOT_FRESH",['code' => 199, 'text' => 'Указанный код истек и был отправлен заново!']);
+define ("CODE_REDEEMED",['code' => 200, 'text' => 'Почта успешно подтверждена!']);
+define ("USER_ACTIVATION_FAILED",['code' => 201, 'text' => 'Ошибка активации пользователя!']);

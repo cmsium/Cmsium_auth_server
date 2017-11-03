@@ -169,6 +169,19 @@ class UserAuth{
     }
 
     /**
+     * @param string $action Current action
+     * @param string|bool $user_id User id
+     * @return bool Check permissions status
+     */
+    public function checkActionPermissionsById($action_id, $user_id = false){
+        $roles = $this->getRolesById($action_id);
+        if (!$roles) return false;
+        if ($roles[0] === '') return false;
+        if ($roles[0] == 0) return true;
+        return $this->checkSelfRoles($roles, $user_id);
+    }
+
+    /**
      * Get allowed to action roles list
      *
      * @param string $action Current action
@@ -181,6 +194,21 @@ class UserAuth{
         if (!$result)
             return false;
         $query = "CALL getActionRoles('{$result['action_id']}');";
+        $result = $conn->performQueryFetch($query);
+        if (!$result)
+            return false;
+        return explode(',',$result['roles']);
+    }
+
+    /**
+     * Get allowed to action roles list by id
+     *
+     * @param string $action Current action
+     * @return array|bool Roles array
+     */
+    public function getRolesById($action_id) {
+        $conn = DBConnection::getInstance();
+        $query = "CALL getActionRoles('$action_id');";
         $result = $conn->performQueryFetch($query);
         if (!$result)
             return false;

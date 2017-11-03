@@ -202,6 +202,11 @@ class User {
         return $conn->performQueryFetchAll($query);
     }
 
+    public static function getAllDraftUsers() {
+        $conn = DBConnection::getInstance();
+        $query = "SELECT * FROM draft_user_properties;";
+        return $conn->performQueryFetchAll($query);
+    }
 
     /**
      * Set user data information in data array of user object
@@ -224,6 +229,24 @@ class User {
 //            'mask' => implode(',',array_keys($data['birthplace']))
 //        ];
         self::$data = $data;
+    }
+
+    public static function getDataJSON($id) {
+        $conn = DBConnection::getInstance();
+//        $ref_handler = ReferenceHandler::getInstance();
+        $query = "CALL setUserData('$id');";
+        $data = $conn->performQueryFetch($query);
+        $data['user_id'] = $id;
+//        $props = ['address_object' => ['object_props' => [], 'method_props' => ['643',$data['birthplace']]]];
+//        $instance = $ref_handler->build("user_properties", 'birthplace', 'read', $props);
+//        if ($instance) {
+//            $data['birthplace'] = $instance->getData();
+//        }
+//        $data['birthplace'] = [
+//            'value' => implode(', ',$data['birthplace']),
+//            'mask' => implode(',',array_keys($data['birthplace']))
+//        ];
+        return json_encode($data, JSON_UNESCAPED_UNICODE);
     }
 
 
@@ -686,11 +709,11 @@ class User {
      * @param string $event_id Id of current event
      * @return mixed Event data
      */
-    public static function readProps($user_id,$table_name){
+    public static function readProps($user_id,$table_name,$write_to_props = true){
         $conn = DBConnection::getInstance();
         $query = "CALL readProps('{$table_name}','{$user_id}');";
         $result = $conn->performQueryFetch($query);
-        if ($result) {
+        if ($write_to_props && $result) {
             self::setPropsData($result);
         }
         return $result;
@@ -878,6 +901,55 @@ class User {
         }
     }
 
+    public static function createOuter($params_array) {
+        $conn = DBConnection::getInstance();
+        $user_id = self::generateIdHash($params_array);
+        if (!self::identifyUser($user_id)) {
+            // Connect to db, hash password and then write to db
+            $conn->startTransaction();
+            $hashed_password = self::generatePassword($params_array['password']);
+            $user_id = self::generateIdHash($params_array);
+            $params_array['password'] = $hashed_password;
+            // Iterating through params hash
+            foreach ($params_array as $key => $value) {
+                $table_name = self::getOuterTableName($key);
+                if ($table_name == 'draft_user_properties') {
+                    $user_props_columns[] = $key;
+                    $user_props_values[] = "'$value'";
+                } elseif ($table_name == 'draft_emails') {
+                    $query = "INSERT INTO $table_name($key, user_id, verified) VALUES ('$value','$user_id', 0);";
+                    if (!$conn->performQuery($query)) {
+                        $conn->rollback();
+                        return false;
+                    }
+                } elseif ($table_name) {
+                    $query = "INSERT INTO $table_name($key, user_id) VALUES ('$value','$user_id');";
+                    if (!$conn->performQuery($query)) {
+                        $conn->rollback();
+                        return false;
+                    }
+                }
+            }
+//            foreach ($params_array['roles'] as $value) {
+//                $query = "INSERT INTO roles_in_users(role_id, user_id) VALUES ($value, '$user_id');";
+//                if (!$conn->performQuery($query)) {
+//                    $conn->rollback();
+//                    return false;
+//                }
+//            }
+            $query_user_props = "INSERT INTO draft_user_properties(" . implode(", ", $user_props_columns) . ", user_id) 
+                             VALUES(" . implode(", ", $user_props_values) . ",'$user_id');";
+            if (!$conn->performQuery($query_user_props)) {
+                $conn->rollback();
+                return false;
+            }
+            $conn->commit();
+            return $user_id;
+        } else {
+            return false;
+        }
+    }
+
     public static function getUserRoles($user_id) {
         $conn = DBConnection::getInstance();
         $query = "CALL getUserRoles('$user_id');";
@@ -908,6 +980,130 @@ class User {
         }
     }
 
+    /**
+     * Функция возвращает имя таблицы авторизации на основе передаваемого типа авторизации
+     *
+     * @param string $type Тип авторизации, может быть phone, username, email
+     * @return bool|string Имя таблицы, иначе false
+     */
+    public static function getOuterTableName($type) {
+        switch ($type) {
+            case 'phone': return 'draft_phones'; break;
+            case 'firstname':
+            case 'middlename':
+            case 'lastname':
+            case 'birth_date':
+            case 'birthplace':
+            case 'password':
+            case 'username': return 'draft_user_properties'; break;
+            case 'email': return 'draft_emails'; break;
+            case 'contract_id': return 'student_properties'; break;
+            case 'position': return 'staff_properties'; break;
+
+            default: return false;
+        }
+    }
+
+    public static function sendVerificationMail($user_id, $email) {
+        $mail = Mailer::getInstance();
+        $code = self::generateActivationCode($user_id);
+        $url = Config::get('host_url')."/register/activate?code=$code";
+        $content = "<html>
+<body>
+    <h1>Добро пожаловать!</h1>
+    <p>Вы получили это письмо, так как были зарегистрированы в системе УКЛАД</p><br/>
+    <p>
+    Чтобы начать пользоваться своей учетной записью, пройдите по данной ссылке и подтвердите указанную почту:
+    <a href='$url'>$url</a>
+    </p>
+</body>
+</html>";
+        if ($mail->send($email, 'Welcome to UKLAD!', $content)) {
+            $conn = DBConnection::getInstance();
+            $query = "INSERT INTO activation_codes(user_id, code) VALUES ('$user_id','$code');";
+            $result = $conn->performQuery($query);
+            return $result ? true : false;
+        } else {
+            return false;
+        }
+    }
+
+    public static function checkActivationCode($code) {
+        $conn = DBConnection::getInstance();
+        $query = "SELECT * FROM activation_codes WHERE code = '$code';";
+        $result = $conn->performQueryFetch($query);
+        if (!$result) {
+            return CODE_NOT_FOUND['text'];
+        }
+        // Check freshness
+        $code_create_time = strtotime($result['created_at']);
+        if (($code_create_time + V_CODE_LIFETIME) < time()) {
+            $query = "DELETE FROM activation_codes WHERE code = '$code'";
+            $conn->performQuery($query);
+            $query = "SELECT * FROM draft_emails WHERE user_id = '{$result['user_id']}';";
+            $user_result = $conn->performQueryFetch($query);
+            self::sendVerificationMail($result['user_id'], $user_result['email']);
+            return CODE_NOT_FRESH['text'];
+        } else {
+            $query = "UPDATE draft_emails SET verified=1 WHERE user_id = '{$result['user_id']}';";
+            $conn->performQuery($query);
+            $query = "DELETE FROM activation_codes WHERE code = '$code'";
+            $conn->performQuery($query);
+            return CODE_REDEEMED['text'];
+        }
+    }
+
+    public static function generateActivationCode($user_id) {
+        return md5($user_id.microtime());
+    }
+
+    public static function activateDraftUser($user_id) {
+        $conn = DBConnection::getInstance();
+        $query = "SELECT * FROM draft_user_properties
+  JOIN draft_phones ON draft_phones.user_id = draft_user_properties.user_id
+  JOIN draft_emails ON draft_emails.user_id = draft_user_properties.user_id
+WHERE draft_user_properties.user_id = '$user_id';";
+        $user_data = $conn->performQueryFetch($query);
+        // Check if email is verified
+        if (!$user_data || $user_data['verified'] === '0') {
+            return false;
+        }
+        $conn->startTransaction();
+        $query = "CALL deleteDraftUser('$user_id');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $query = "INSERT INTO bus_tickets(id_user, ticket) VALUES ('$user_id', '{$user_data['password']}');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $query = "INSERT INTO user_properties(username, user_id, birthplace, birth_date, firstname, middlename, lastname)
+                  VALUES ('{$user_data['username']}','$user_id','{$user_data['birthplace']}','{$user_data['birth_date']}',
+                  '{$user_data['firstname']}','{$user_data['middlename']}','{$user_data['lastname']}');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $query = "INSERT INTO emails(email, user_id) VALUES ('{$user_data['email']}','$user_id');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $query = "INSERT INTO phones(phone, user_id) VALUES ('{$user_data['phone']}','$user_id');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $query = "INSERT INTO roles_in_users(role_id, user_id) VALUES (3, '$user_id');";
+        if (!$conn->performQuery($query)) {
+            $conn->rollback();
+            return false;
+        }
+        $conn->commit();
+        return true;
+    }
 
     /**
      * Gets current user's id

@@ -2,7 +2,7 @@
 <services>
     <service>
         <name>cmsium_auth</name>
-        <host>192.168.200.13</host>
+        <host>3.host1.dev.cmsium.org</host>
         <manifest>/manifest.xml</manifest>
     </service>
     <service>
@@ -12,7 +12,12 @@
     </service>
     <service>
         <name>Cmsium_sandbox</name>
-        <host>192.168.200.10</host>
+        <host>192.168.200.14</host>
         <manifest>/sandbox.xml</manifest>
+    </service>
+    <service>
+        <name>Uklad</name>
+        <host>test.uklad.center</host>
+        <manifest>/manifest.xml</manifest>
     </service>
 </services>
