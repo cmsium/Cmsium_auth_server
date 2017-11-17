@@ -2,7 +2,7 @@
 <services>
     <service>
         <name>cmsium_auth</name>
-        <host>3.host1.dev.cmsium.org</host>
+        <host>auth.uklad-dev.center</host>
         <manifest>/manifest.xml</manifest>
     </service>
     <service>
@@ -17,7 +17,7 @@
     </service>
     <service>
         <name>Uklad</name>
-        <host>test.uklad.center</host>
+        <host>uklad-dev.center</host>
         <manifest>/manifest.xml</manifest>
     </service>
 </services>

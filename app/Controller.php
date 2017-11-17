@@ -44,10 +44,12 @@ class Controller {
                     return DATA_FORMAT_ERROR['text'];
                 }
             }
-            if ($auth->login()) {
+            if ($token = $auth->login()) {
                 if (isset($uri)) {
+                    // Redirect to /auth/set_cookie page
+                    $redirect_uri = 'http://'.parse_url($uri)['host']."/auth/set_cookie?value=$token&uri=".urlencode($uri);
                     $headers = HeadersController::getInstance();
-                    $headers->respondLocation(['value' => $uri]);
+                    $headers->respondLocation(['value' => $redirect_uri]);
                 } else {
                     return 'Пользователь успешно авторизован!';
                 }
@@ -336,6 +338,195 @@ class Controller {
             } else {
                 return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
             }
+        }
+    }
+
+    function allUsersWithFiltersJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_GET, 'usersMask');
+            if ($data === FALSE) {
+                return json_encode(['status' => 'error', 'message' => USERS_FILTER_VALIDATION_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+            if (isset($_GET['start'])){
+                $start = (int)$_GET['start'];
+            } else {
+                $start = 0;
+            }
+            $offset = PAGES_OFFSET;
+            return json_encode(User::getAllWithFilters($data, $start, $offset), JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function allUsersRolesJSON() {
+        if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+            return json_encode(User::getAllRoles(), JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    // User control API interface
+
+    function createUserFromAPI() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_POST, 'registMask');
+            $data['roles'] = $_POST['roles'];
+            if (!$data)
+                return json_encode(['status' => 'error', 'message' => CREATE_VALIDATION_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            if ($_POST['password'] != $_POST['password_repeat'])
+                return json_encode(['status' => 'error', 'message' => PASSWORD_CHECK_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            if (User::create($data)){
+                return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => CREATE_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function updateUserFromAPI() {
+        $validator = Validator::getInstance();
+        $data = $validator->ValidateAllByMask($_POST,'updateMask');
+        if (!$data)
+            return json_encode(['status' => 'error', 'message' => UPDATE_VALIDATION_ERROR['text']],JSON_UNESCAPED_UNICODE);
+        $id = $_POST['user_id'];
+        $data['roles'] = $_POST['roles'];
+        unset($data['user_id']);
+        if (User::update($id, $data))
+            return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+        else
+            return json_encode(['status' => 'error', 'message' => UPDATE_ERROR['text']],JSON_UNESCAPED_UNICODE);
+
+    }
+
+    function destroyUserFromAPI() {
+        if (isset($_GET['id'])) {
+            if (User::destroy($_GET['id'])) {
+                return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => DELETE_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => USER_PARAM_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function deleteUserFromAPI() {
+        if ($_GET['id']) {
+            if (User::checkSelfSession($_GET['id']))
+                return json_encode(['status' => 'error', 'message' => SELF_DELETE['text']],JSON_UNESCAPED_UNICODE);
+            User::confirm_destroy($_GET['id']);
+            return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+        } else {
+            return json_encode(['status' => 'error', 'message' => USER_PARAM_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function updateUserPropsFromAPI() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $role = $validator->Check('CirrLatName', $_POST['role'], ['min' => 3, 'max' => 64]);
+            if (!$role) {
+                return json_encode(['status' => 'error', 'message' => UNSUPPORTED_DATA_TYPE['text']],JSON_UNESCAPED_UNICODE);
+            }
+            $data = $_POST;
+            unset ($data['role']);
+            $id = $_POST['user_id'];
+            unset($data['user_id']);
+            if (User::updateProps($id, $role, $data))
+                return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+            else {
+                return json_encode(['status' => 'error', 'message' => UPDATE_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => NO_DATA['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function updateUserPasswordFromAPI() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_POST, 'passwordMask');
+            if (!$data)
+                return json_encode(['status' => 'error', 'message' => PASSWORD_VALIDATION_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            if ($_POST['password'] != $_POST['password_repeat'])
+               return json_encode(['status' => 'error', 'message' => PASSWORD_CHECK_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            if (User::updatePassword(Cookie::getUserId(), $data)) {
+                return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => PASSWORD_UPDATE_FAIL['text']],JSON_UNESCAPED_UNICODE);
+            }
+        }
+        return json_encode(['status' => 'error', 'message' => POST_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+    }
+
+    function createRoleFromAPI() {
+        if (isset($_GET['name']) && isset($_GET['model'])) {
+            $validator = Validator::getInstance();
+            $data_array = $validator->ValidateAllByMask($_GET,'createTypeMask');
+            if (!$data_array)
+                return json_encode(['status' => 'error', 'message' => CREATE_ROLE_VALIDATION_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            // Delete unwanted characters from foreign key and reference flags
+            $data_array['model'] = array_map(function($i){
+                if (isset($i[5]))
+                    $i[5]=substr($i[5],12);
+                if (isset($i[6]))
+                    $i[6]=substr($i[6],10);
+                return$i;
+            },$data_array['model']);
+            $table_name = RoleConstructor::transliterate($data_array['name']);
+            $role_constructor = RoleConstructor::getInstance(['role_name'=>$table_name]);
+            $role_constructor->createRole($data_array);
+            return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+        } else {
+            return json_encode(['status' => 'error', 'message' => GET_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function destroyRoleFromAPI() {
+        if (isset($_GET['role'])) {
+            $validator = Validator::getInstance();
+            $role_id = $validator->Check('StrNumbers',$_GET['role'],['min'=>1,'max'=>11]);
+            if (!$role_id)
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            $type_constructor = RoleConstructor::getInstance(['role_id'=>$role_id]);
+            $role = $type_constructor->destroyRole($role_id);
+            if (!$role) {
+                return json_encode(['status' => 'error', 'message' => DELETE_ROLE_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+            return json_encode(['status' => 'ok', 'role' => $role],JSON_UNESCAPED_UNICODE);
+        } else {
+            return json_encode(['status' => 'error', 'message' => GET_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function activateDraftUserFromAPI() {
+        if (isset($_GET['user_id'])) {
+            $validator = Validator::getInstance();
+            $user_id= $validator->Check('Md5Type',$_GET['user_id'],[]);
+            if (!$user_id)
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            if (User::activateDraftUser($user_id)) {
+                return json_encode(['status' => 'ok'],JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode(['status' => 'error', 'message' => USER_ACTIVATION_FAILED['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => GET_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    function getRoleXML() {
+        if ($_GET['role']) {
+            $validator = Validator::getInstance();
+            $role = $validator->Check('AlphaNumeric', $_GET['role'], ['min' => 1, 'max' => 64]);
+            $file = new File(ROOTDIR."/app/lib/users/xml/generated_roles_schemas/$role.xml");
+            if (!$file->exists()) {
+                return null;
+            }
+            header("Content-type: text/xml;charset=utf-8");
+            return $file->getContent();
         }
     }
 
@@ -813,7 +1004,16 @@ class Controller {
 
     function allDraftUsers() {
         $user_data = User::getAllDraftUsers();
+        if (!$user_data) $user_data = [];
         include ROOTDIR.'/app/views/all_draft_users.html.php';
+    }
+
+    function allDraftUsersXML() {
+        $user_data = User::getAllDraftUsers();
+        if (!$user_data) $user_data = [];
+        $xml_str = User::toXML($user_data);
+        header("Content-type: text/xml;charset=utf-8");
+        return $xml_str;
     }
 
     function activateDraftUser() {

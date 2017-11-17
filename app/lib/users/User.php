@@ -61,6 +61,9 @@ class User {
      * @return bool True, if the query was done, else False
      */
     public static function destroy($id) {
+        if (!self::check_confirmation($id)) {
+            return false;
+        }
         $conn = DBConnection::getInstance();
         $conn->StartTransaction();
         $query = "CALL destroyUser('$id');";
@@ -1111,7 +1114,6 @@ WHERE draft_user_properties.user_id = '$user_id';";
      * @return string Id of the user
      */
     public static function getSessionUserId() {
-        Session::getInstance();
         $user_id = Cookie::getUserId();
         return $user_id;
     }

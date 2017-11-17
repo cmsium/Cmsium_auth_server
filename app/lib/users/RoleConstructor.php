@@ -73,7 +73,7 @@ class RoleConstructor extends Constructor {
             return false;
         }
         $conn->commit();
-        return true;
+        return $role;
     }
 
     /**

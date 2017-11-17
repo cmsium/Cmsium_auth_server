@@ -32,8 +32,22 @@ $routes = [
     '/users/draft/activate' => ['activateDraftUser', 'auth' => [1]],
     '/users/data/get' => ['getUserData', 'auth' => [1]],
     '/users/find/json' => ['findUserJSON', 'auth' => [1]],
+    '/users/all/roles/json' => ['allUsersRolesJSON', 'auth' => [1]],
     '/users/all/json' => ['allUsersJSON', 'auth' => [1]],
+    '/users/all/draft/xml' => ['allDraftUsersXML', 'auth' => [1]],
+    '/users/all/filters/json' => ['allUsersWithFiltersJSON', 'auth' => [1]],
     '/users/data/get/props' => ['getUserPropsJSON', 'auth' => [1]],
+    // Users CRUD API
+    '/users/api/create' => ['createUserFromAPI', 'auth' => [1]],
+    '/users/api/update' => ['updateUserFromAPI', 'auth' => [1]],
+    '/users/api/destroy' => ['destroyUserFromAPI', 'auth' => [1]],
+    '/users/api/delete' => ['deleteUserFromAPI', 'auth' => [1]],
+    '/users/api/update/props' => ['updateUserPropsFromAPI', 'auth' => [1]],
+    '/users/api/update/password' => ['updateUserPasswordFromAPI', 'auth' => [1]],
+    '/users/api/create/role' => ['createRoleFromAPI', 'auth' => [1]],
+    '/users/api/destroy/role' => ['destroyRoleFromAPI', 'auth' => [1]],
+    '/users/api/draft/activate' => ['activateDraftUserFromAPI', 'auth' => [1]],
+    '/users/roles/get/xml' => ['getRoleXML', 'auth' => [1]],
     // Users dashboard
     // [0] - allowed for any role
     '/users/dashboard' => ['dashboardMenu', 'auth' => [0]],

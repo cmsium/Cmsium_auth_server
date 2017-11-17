@@ -74,7 +74,9 @@ $conn->performQuery($query);
 $services = simplexml_load_file(ROOTDIR.'/config/microservices.xml');
 foreach ($services as $item) {
     $url = 'http://'.$item->host.$item->manifest;
-    $manifest = $converter->XMLToArray(file_get_contents($url));
+    $xml_str = file_get_contents($url);
+    if (!$xml_str) break;
+    $manifest = $converter->XMLToArray($xml_str);
     $service_name = $manifest['service_name'];
 
     // Write all actions to db
