@@ -617,19 +617,18 @@ class Types{
 
 
     /**
-     *Проверяет как послледовательность цифр
+     *Проверяет как последовательность цифр
      *
      * @param string $value Проверяемая строка;
      * @param array $props Параметры типа;
      *
      * @return string|false Валидированное значение;
      */
-    public static function StrNumbers($value, $props)
-    {
+    public static function StrNumbers($value, $props) {
         if ($props['max'] == null)
             $props['max'] = 11;
         $pattern = "/^\d{{$props['min']},{$props['max']}}$/";
-        if (self::Preg($pattern, $value))
+        if (self::Preg($pattern, $value) !== false)
             switch ($props['output']) {
                 case 'string':
                     return $value;

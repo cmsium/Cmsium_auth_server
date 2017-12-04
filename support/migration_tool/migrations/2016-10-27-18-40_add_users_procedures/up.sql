@@ -29,15 +29,15 @@ CREATE PROCEDURE getUser(IN idUser VARCHAR(32))
     WHERE bus.id_user = idUser
     GROUP BY id_user;
   END;
-CREATE PROCEDURE getAllUsers(IN Start INTEGER, IN myOffset INTEGER)
+CREATE PROCEDURE getAllUsers(IN Start INT, IN myOffset INT)
   BEGIN
     SELECT SQL_CALC_FOUND_ROWS bus.id_user, props.username, props.firstname, props.middlename, props.lastname,
-    GROUP_CONCAT(DISTINCT r.t_name ORDER BY r.t_name ASC SEPARATOR ', ') AS roles
+      GROUP_CONCAT(DISTINCT r.t_name ORDER BY r.t_name ASC SEPARATOR ', ') AS roles
     FROM bus_tickets AS bus
       LEFT JOIN user_properties AS props ON bus.id_user = props.user_id
       LEFT JOIN roles_in_users AS riu ON bus.id_user = riu.user_id
       LEFT JOIN roles AS r ON riu.role_id = r.id
-    GROUP BY bus.id_user LIMIT Start,myOffset;
+    GROUP BY bus.id_user, props.username, props.firstname, props.middlename, props.lastname LIMIT Start,myOffset;
   END;
 CREATE PROCEDURE setUserData(IN idUser VARCHAR(32))
   BEGIN

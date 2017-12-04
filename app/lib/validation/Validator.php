@@ -133,21 +133,21 @@ class Validator {
      */
     public function Validate($array, $paramName, $paramProps){
         if (isset($array[$paramName])) {
-            if (empty($array[$paramName]))
+            if (empty($array[$paramName]) && $array[$paramName] !== '0') {
                 if ($paramProps['required']) {
                     return false;
-                }
-                else{
+                } else {
                     if (isset($paramProps['props']['unrequired_output']))
                         return $paramProps['props']['unrequired_output'];
                     else {
                         return NULL;
                     }
                 }
+            }
             $check = $this->Check($paramProps['func'],
                 $array[$paramName],
                 $paramProps['props']);
-            if (!$check) {
+            if ($check === false) {
                 return false;
             }
             return $check;
