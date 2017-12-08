@@ -20,4 +20,9 @@
         <host>3.host1.dev.cmsium.org</host>
         <manifest>/manifest_uklad.xml</manifest>
     </service>
+    <service>
+        <name>cmsium_address</name>
+        <host>api.dev.cmsium.org</host>
+        <manifest>/manifest.xml</manifest>
+    </service>
 </services>
