@@ -8,3 +8,8 @@ storage
 support/addresses_autoupdate/storage
 support/addresses_autoupdate/tmp
 support/parser/config.xml
+app/lib/users/xml/generated_roles_schemas/*
+app/lib/users/RolesSchema.php
+# exception to the rule
+!app/lib/users/xml/generated_roles_schemas/.gitkeep
+!app/lib/users/xml/generated_roles_schemas/staff.xml
