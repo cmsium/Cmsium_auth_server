@@ -18,29 +18,17 @@ class Address {
      */
     public function save() {
         // ['country' => 'iso_code', 'city' => ...]
-        $conn = DBConnection::getInstance();
         $data = $this->data;
-        $country_iso = $data['country'];
-        unset($data['country']);
-        $table_name = $this->getCountryTableName($country_iso)['table_name'];
-        $types = $this->getTypes();
-        $last_item_id = -1;
-        foreach ($data as $type_name => $object_name) {
-            $type_id = array_search($type_name, $types);
-            if (!$type_id) {
-                return false;
-            }
-            $check_query = "CALL checkAddressObjectPresence('$table_name','$object_name', $last_item_id, $type_id);";
-            $result_check = $conn->performQueryFetch($check_query);
-            if ($result_check) {
-                $last_item_id = $result_check['id'];
-            } else {
-                $query = "CALL writeAddressObject('$table_name', '$object_name', $last_item_id, $type_id);";
-                $result = $conn->performQueryFetch($query);
-                $last_item_id = $result['id'];
-            }
+        $address = Config::get('address_domain');
+        $request = new Request("$address/save");
+        $response = $request->sendRequestJSON('POST',
+            ['Content-type: application/x-www-form-urlencoded','Cookie: token='.$_COOKIE['token']],
+            http_build_query($data));
+        if ($response['status'] === 'ok') {
+            return $response['last_id'];
+        } else {
+            return false;
         }
-        return $last_item_id;
     }
 
     /**
@@ -51,29 +39,18 @@ class Address {
      * @return array|string Address array: ['type_name' => 'address_object_name', ... ]
      */
     public function read($country_iso, $object_id, $concat = false) {
-        $types = $this->getTypes();
-        $country_info = $this->getCountryTableName($country_iso);
-        $table_name = $country_info['table_name'];
-        $conn = DBConnection::getInstance();
-        $last_item_id = $object_id;
-        $result_table = [];
-        while ($last_item_id !== '-1') {
-            $query = "SELECT * FROM $table_name WHERE id = $last_item_id";
-            $result_row = $conn->performQueryFetch($query);
-            $last_item_id = $result_row['parent_id'];
-            $result_table[] = $result_row;
-        }
-        if (!$result_table)
-            return [];
-        $result_table = array_reverse($result_table);
-        foreach ($result_table as $value) {
-            $result[$types[$value['type_id']]] = $value['name'];
-        }
+        $address = Config::get('address_domain');
+        $url = "$address/read?country_iso=$country_iso&object_id=$object_id&concat=";
         if ($concat) {
-            return implode(', ', $result);
+            $url .= 'true';
         } else {
-            return $result;
+            $url .= 'false';
         }
+        $request = new Request($url);
+        $result = $request->sendRequestJSON('GET',
+            'Cookie: token='.$_COOKIE['token'],
+            false);
+        return $result;
     }
 
 //    /**
@@ -130,7 +107,7 @@ class Address {
         $query = "CALL getCountryByISO($country_iso);";
         $result = $conn->performQueryFetch($query);
         if (!$result)
-            return false;
+            ErrorHandler::throwException(COUNTRY_NOT_FOUND, 'page');
         $table_name_check = 'address_'.strtolower($result['alpha2']);
         $query = "CALL checkAddressTablePresence('$table_name_check')";
         $result_table = $conn->performQueryFetch($query);

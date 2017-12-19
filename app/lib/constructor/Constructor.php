@@ -275,8 +275,10 @@ class Constructor {
         $schema_array[$type_name] = $type_schema;
         $string_array = $this->buildSchemaArray($schema_array);
         $result_content = sprintf(static::$schema_pattern, $string_array);
-        $file = new File(ROOTDIR."/app/lib/".static::$schema_class_module."/".static::$schema_class.".php");
+        $path = ROOTDIR."/app/lib/".static::$schema_class_module."/".static::$schema_class.".php";
+        $file = new File($path);
         return $file->write($result_content);
+        self::chmodR($path, 0775);
     }
 
 
@@ -378,8 +380,13 @@ class Constructor {
         }
         $class = static::$entity_class;
         $xml = $class::toXML($result_array, false);
-        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$result_array['type_name']}.xml");
+        $path = ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path;
+        if (!file_exists($path)) {
+            mkdir($path, 0775, true);
+        }
+        $file = new File($path."/{$this->type_name}.xml");
         $file->write($xml);
+        self::chmodR($path, 0775);
         return true;
     }
 
@@ -411,8 +418,13 @@ class Constructor {
         unset($xml_array['item']);
         $class = static::$entity_class;
         $xml = $class::toXML($xml_array, false);
-        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $path = ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path;
+        if (!file_exists($path)) {
+            mkdir($path, 0775, true);
+        }
+        $file = new File($path."/{$this->type_name}.xml");
         $file->write($xml);
+        self::chmodR($path, 0775);
         return true;
     }
 
@@ -431,7 +443,11 @@ class Constructor {
         unset($xml_array['item']);
         $class = static::$entity_class;
         $xml = $class::toXML($xml_array, false);
-        $file = new File(ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path."/{$this->type_name}.xml");
+        $path = ROOTDIR."/app/lib/".static::$schema_path_module."/xml/".static::$schemas_path;
+        if (!file_exists($path)) {
+            mkdir($path, 0775, true);
+        }
+        $file = new File($path."/{$this->type_name}.xml");
         $file->write($xml);
         return true;
     }
@@ -517,6 +533,35 @@ class Constructor {
         $document_schema = ROOTDIR."/app/lib/".static::$schema_class_module."/classes/".static::$schema_class.".php";
         if(is_file($document_schema))
             unlink($document_schema);
+    }
+
+    public static function chmodR($path, $filemode) {
+        if (!is_dir($path)) {
+            return chmod($path, $filemode);
+        }
+        $dh = opendir($path);
+        while ($file = readdir($dh)) {
+            if ($file != '.' && $file != '..') {
+                $fullpath = $path.'/'.$file;
+                if(!is_dir($fullpath)) {
+                    if (!chmod($fullpath, $filemode)){
+                        return false;
+                    }
+                } else {
+                    if (!self::chmodR($fullpath, $filemode)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        closedir($dh);
+
+        if ( chmod($path, $filemode) ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function destroyInstance() {

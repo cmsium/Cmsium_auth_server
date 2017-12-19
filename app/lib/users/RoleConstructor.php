@@ -139,7 +139,7 @@ class RoleConstructor extends Constructor {
     }
 
     /**
-     * Get all  roles in system list
+     * Get all roles in system list
      *
      * @return array|bool All roles array
      */
