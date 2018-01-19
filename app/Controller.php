@@ -526,7 +526,10 @@ class Controller {
             $role = $validator->Check('AlphaNumeric', $_GET['role'], ['min' => 1, 'max' => 64]);
             $file = new File(ROOTDIR."/app/lib/users/xml/generated_roles_schemas/$role.xml");
             if (!$file->exists()) {
-                return null;
+                $file->path = ROOTDIR."/app/lib/users/xml/roles_schemas/$role.xml";
+                if (!$file->exists()) {
+                    return false;
+                }
             }
             header("Content-type: text/xml;charset=utf-8");
             return $file->getContent();

@@ -19,9 +19,10 @@ class File {
      */
     public function getContent() {
         if (file_exists($this->path)) {
-            return file_get_contents($this->path);
+            $contents = file_get_contents($this->path);
+            return $contents;
         } else {
-            ErrorHandler::throwException(NO_FILE_FOUND);
+            return false;
         }
     }
 
