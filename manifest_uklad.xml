@@ -520,78 +520,78 @@
             <method>
                 <resource>vendors</resource>
                 <auth>staff</auth>
-                <methdod>
+                <method>
                     <resource>add_vendor</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_vendor_check</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>delete_vendor</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>delete_vendor_check</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_category</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_category_check</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>delete_category</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>delete_category_check</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_model</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_model_check</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>get_models</resource>
                     <auth>staff</auth>
-                </methdod>
+                </method>
             </method>
             <method>
                 <resource>university_structure</resource>
                 <auth>staff</auth>
-                <methdod>
+                <method>
                     <resource>add_structure_type</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>delete_structure_type</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>add_structure_object</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>update_structure_object</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>get_objects_tree</resource>
                     <auth>staff</auth>
-                </methdod>
-                <methdod>
+                </method>
+                <method>
                     <resource>get_structure_objects</resource>
                     <auth>staff</auth>
-                </methdod>
+                </method>
             </method>
             <method>
                 <resource>logout</resource>
