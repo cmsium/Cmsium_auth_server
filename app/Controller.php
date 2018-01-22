@@ -140,7 +140,7 @@ class Controller {
     function logoutUser() {
         $auth = UserAuth::getInstance();
         if ($auth->logout()) {
-            $redirect_uri = 'http://'.Config::get('main_domain')."/auth/set_cookie?value=empty&uri=".urlencode('http://'.Config::get('main_domain'))."&unset=true";
+            $redirect_uri = 'http://'.Config::get('uklad_server')."/auth/set_cookie?value=empty&uri=".urlencode('http://'.Config::get('uklad_server'))."&unset=true";
             $headers = HeadersController::getInstance();
             $headers->respondLocation(['value' => $redirect_uri]);
             return LOGOUT_SUCCESS['text'];
