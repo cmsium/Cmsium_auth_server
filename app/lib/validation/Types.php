@@ -30,7 +30,14 @@ class Types{
         return false;
     }
 
-    public static function sanitize ($value){
+    public static function customRegexp($value, $props) {
+        $res = self::Preg($props['pattern'],$value);
+        if (!$res)
+            return false;
+        return $value;
+    }
+
+    public static function sanitize($value){
         $value = trim($value);
         $value = strip_tags($value);
         $value = stripcslashes($value);

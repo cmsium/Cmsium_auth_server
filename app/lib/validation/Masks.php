@@ -351,6 +351,18 @@ class Masks{
                 'required' => true]
         ],
 
+        'checkPermissionsArrayValidation' => [
+            'token' => ['func' => 'AlphaNumeric',
+                'props' => ['min' => 64, 'max' => 64],
+                'required' => true],
+            'service_name' => ['func' => 'CirrLatName',
+                'props' => ['min' => 3, 'max' => 50],
+                'required' => true],
+            'actions' => ['func' => 'multiple',
+                'props' => ['func' => 'customRegexp', 'pattern' => '/^[\w\/]+$/u'],
+                'required' => true]
+        ],
+
         'checkPermissionIdValidation' => [
             'token' => ['func' => 'AlphaNumeric',
                 'props' => ['min' => 64, 'max' => 64],

@@ -14,6 +14,7 @@ $routes = [
     '/logout/json' => ['logoutUserJSON'],
     '/token/check' => ['checkToken'],
     '/permissions/check' => ['checkPermission'],
+    '/permissions/check/array' => ['checkPermissionArray'],
     '/permissions/check/id' => ['checkPermissionId'],
     '/test/mailer' => ['checkMailer'],
     // Users web interface

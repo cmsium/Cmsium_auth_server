@@ -240,6 +240,41 @@ class Controller {
     }
 
     /**
+     * POST: [user_token, service_name, actions]
+     *
+     * @return string
+     */
+    function checkPermissionArray() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $validator = Validator::getInstance();
+            $data = $validator->ValidateAllByMask($_POST, 'checkPermissionsArrayValidation');
+            if (!$data) {
+                return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+            $auth = UserAuth::getInstance();
+            if ($user_id = $auth->check($data['token'])) {
+                // Check permissions
+//                if ($auth->checkActionPermissions($data['actions'][0], $data['service_name'], $user_id)) {
+//                    return json_encode(['status' => 'ok']);
+//                } else {
+//                    return json_encode(['status' => 'error', 'message' => PERMISSIONS_ERROR['text']],JSON_UNESCAPED_UNICODE);
+//                }
+                $result = [];
+                foreach ($data['actions'] as $key => $value) {
+                    if ($auth->checkActionPermissions($value, $data['service_name'], $user_id)) {
+                        $result[] = $key;
+                    }
+                }
+                return json_encode(['status' => 'ok', 'result' => $result]);
+            } else {
+                return json_encode(['status' => 'error', 'message' => AUTH_ERROR['text']],JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            return json_encode(['status' => 'error', 'message' => POST_DATA_ABSENT['text']],JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    /**
      * POST: [user_token, action_id]
      *
      * @return string
