@@ -17,8 +17,8 @@
     </service>
     <service>
         <name>Uklad</name>
-        <host>3.host1.dev.cmsium.org</host>
-        <manifest>/manifest_uklad.xml</manifest>
+        <host>test.uklad.center</host>
+        <manifest>/manifest.xml</manifest>
     </service>
     <service>
         <name>cmsium_address</name>

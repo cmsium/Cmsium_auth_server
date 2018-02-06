@@ -47,7 +47,15 @@ class Router {
             exit;
         }
         $controller = Controller::getInstance();
-        echo $controller->$method();
+        try {
+            echo $controller->$method();
+        } catch (AppException $exception) {
+            $exception_array = ['code' => $exception->getCode(), 'text' => $exception->getMessage()];
+            if ($exception->additional_info !== null) {
+                $exception_array = $exception + $exception->additional_info;
+            }
+            ErrorHandler::renderError($exception_array);
+        }
     }
 
     private function checkAuth($roles) {

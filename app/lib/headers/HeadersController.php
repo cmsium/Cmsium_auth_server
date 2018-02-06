@@ -222,7 +222,6 @@ class HeadersController {
     public function respondXML($params) {
         header('Content-Disposition: attachment; filename="xml_api.xml"');
         header("Content-type: text/xml;charset=utf-8");
-        echo $params['content'];
         return true;
     }
 
