@@ -147,3 +147,5 @@ define('SMTP_FROM', 'no-reply');
 define('SMTP_NAME', 'Uklad Ukladoff');
 
 define('V_CODE_LIFETIME', 43200);
+
+//Github test comment
