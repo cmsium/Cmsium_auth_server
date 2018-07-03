@@ -60,3 +60,4 @@ define ("CODE_NOT_FOUND",['code' => 557, 'text' => 'Указанный код н
 define ("CODE_NOT_FRESH",['code' => 558, 'text' => 'Указанный код истек и был отправлен заново!']);
 define ("CODE_REDEEMED",['code' => 559, 'text' => 'Почта успешно подтверждена!']);
 define ("USER_ACTIVATION_FAILED",['code' => 560, 'text' => 'Ошибка активации пользователя!']);
+define ("LDAP_CONNECTION_FAILED",['code' => 561, 'text' => 'Ошибка подключения к серверу LDAP!']);

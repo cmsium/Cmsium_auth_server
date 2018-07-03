@@ -142,10 +142,18 @@ define ('FILES_PREVIEW_SIZE',100);
  */
 define('SANDBOX_FILES_EXPIRE_TIME',60);
 
+/**
+ * Default SMTP configuration
+ */
 define('SMTP_DEBUG', 2);
 define('SMTP_FROM', 'no-reply');
 define('SMTP_NAME', 'Uklad Ukladoff');
 
 define('V_CODE_LIFETIME', 43200);
+
+/**
+ * LDAP connection config file path
+ */
+define("LDAP_SETTINGS_PATH", ROOTDIR."/config/config_ldap.ini");
 
 //Github test comment

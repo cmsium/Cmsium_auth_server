@@ -64,5 +64,7 @@ $routes = [
     '/users/new_role' => ['newRoleForm', 'auth' => [1]],
     '/users/create_role' => ['createRole', 'auth' => [1]],
     '/users/delete_role' => ['deleteRoleForm', 'auth' => [1]],
-    '/users/destroy_role' => ['deleteRole', 'auth' => [1]]
+    '/users/destroy_role' => ['deleteRole', 'auth' => [1]],
+    // LDAP
+    '/ldap/test' => ['testLDAP'],
 ];
