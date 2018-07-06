@@ -1,5 +1,8 @@
 <?php
-class UserAuth{
+/**
+ * Class UserAuth Authenticate users
+ */
+class UserAuth {
 
     private static $instance;
 
@@ -13,35 +16,11 @@ class UserAuth{
     protected function __construct(){}
 
     /**
-     * Функция генерирует токен авторизации, алгоритм md5
-     *
-     * Генерируется на основе идентификатора пользователя и времени авторизации
-     *
-     * @param string $user_id ID пользователя в БД
-     * @return string Хэш md5
-     */
-    public function generateToken($user_id) {
-        $base_string = $user_id.time();
-        return md5($base_string);
-    }
-
-    /**
-     * Builds the whole token from session and cookie parts and get user_id
-     *
-     * @return array Auth token and user id
-     */
-    public function getAuthInfo($token_raw) {
-        $token = substr($token_raw, 0, 32);
-        $user_id = substr($token_raw, 32, 32);
-        return ['user_id' => $user_id, 'token' => $token];
-    }
-
-    /**
      * Checks auth presence of the current user
      */
     public function check($token_raw) {
             $conn = DBConnection::getInstance();
-            $auth_info = $this->getAuthInfo($token_raw);
+            $auth_info = AuthHelper::getAuthInfo($token_raw);
             $user_id = $auth_info['user_id'];
             $token = $auth_info['token'];
             $query = "CALL getAuthInfo('$user_id', '$token');";
@@ -106,7 +85,7 @@ class UserAuth{
             $user_presence = User::checkPresence($_POST['logintype'], $_POST['login'], $_POST['password']);
             if ($user_presence) {
                 $user_id = $user_presence['id_user'];
-                $token = $this->generateToken($user_id);
+                $token = AuthHelper::generateToken($user_id);
                 if ($set_cookie) {
                     $domain = Config::get('main_domain');
                     $params = [
@@ -148,7 +127,7 @@ class UserAuth{
                 ]);
             $cookie->set();
         }
-        $token = $this->getAuthInfo($raw_token)['token'];
+        $token = AuthHelper::getAuthInfo($raw_token)['token'];
         $query = "CALL clearAuthToken('$token');";
         $conn->performQuery($query);
         return true;

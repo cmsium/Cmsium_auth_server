@@ -34,7 +34,7 @@ class Controller {
      */
     function loginUser() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if (isset($_POST['redirect_uri'])) {
                 $validator = Validator::getInstance();
                 $uri = $validator->Check('URL',$_POST['redirect_uri'],[]);
@@ -68,7 +68,7 @@ class Controller {
      */
     function loginUserJSON() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if ($token = $auth->login(false)) {
                 return json_encode(['status' => 'ok', 'token' => $token]);
             } else {
@@ -138,7 +138,7 @@ class Controller {
      * @return string Plain HTML message
      */
     function logoutUser() {
-        $auth = UserAuth::getInstance();
+        $auth = AuthHandler::getInstance();
         if ($auth->logout()) {
             $redirect_uri = 'http://'.Config::get('uklad_server')."/auth/set_cookie?value=empty&uri=".urlencode('http://'.Config::get('uklad_server'))."&unset=true";
             $headers = HeadersController::getInstance();
@@ -160,7 +160,7 @@ class Controller {
         if (!$data) {
             ErrorHandler::throwException(AUTH_ERROR);
         }
-        $auth = UserAuth::getInstance();
+        $auth = AuthHandler::getInstance();
         if ($auth->logout($data['token'])) {
             return null;
         } else {
@@ -180,7 +180,7 @@ class Controller {
             if (!$data) {
                 return json_encode(['is_valid' => false]);
             }
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if ($user_id = $auth->check($data['token'])) {
                 return json_encode(['is_valid' => true, 'user_id' => $user_id]);
             } else {
@@ -203,7 +203,7 @@ class Controller {
         if (!$data) {
             return "2";
         }
-        $auth = UserAuth::getInstance();
+        $auth = AuthHandler::getInstance();
         if ($user_id = $auth->check($token)) {
             return "1;;$user_id";
         } else {
@@ -223,7 +223,7 @@ class Controller {
             if (!$data) {
                 return json_encode(['status' => 'error', 'message' => DATA_FORMAT_ERROR['text']],JSON_UNESCAPED_UNICODE);
             }
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if ($user_id = $auth->check($data['token'])) {
                 // Check permissions
                 if ($auth->checkActionPermissions($data['action'][0], $data['service_name'], $user_id)) {
@@ -251,7 +251,7 @@ class Controller {
             if (!$data) {
                 ErrorHandler::throwException(DATA_FORMAT_ERROR);
             }
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if ($user_id = $auth->check($data['token'])) {
                 // Check permissions
 //                if ($auth->checkActionPermissions($data['actions'][0], $data['service_name'], $user_id)) {
@@ -286,7 +286,7 @@ class Controller {
             if (!$data) {
                 ErrorHandler::throwException(DATA_FORMAT_ERROR);
             }
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if ($user_id = $auth->check($data['token'])) {
                 // Check permissions
                 if ($auth->checkActionPermissionsById($data['action'], $user_id)) {
@@ -1071,6 +1071,24 @@ class Controller {
         } else {
             return GET_DATA_ABSENT['text'];
         }
+    }
+
+    // LDAP
+
+    function testLDAP() {
+//        $ldap_conn = new LDAPConnection();
+//        var_dump($ldap_conn->search('(mail=*)', ['cn', 'mail']));
+//        $data = [
+//            'userPassword' => LDAPConnection::prepareMD5Password('Qwerty1234*')
+//        ];
+//        var_dump($ldap_conn->addRecord('cn=ukladoff', $data));
+//        var_dump($ldap_conn->editRecord('cn=ukladoff', $data));
+
+        $data = [
+            'password' => 'h3ll0w0rld',
+            'password_repeat' => 'h3ll0w0rld'
+        ];
+        User::updatePassword('eeec1e618690fba21fd416df610da961',$data);
     }
 
     // Transformers

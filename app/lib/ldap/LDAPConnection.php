@@ -1,11 +1,23 @@
 <?php
-
 /**
  * LDAP connector class
  */
 class LDAPConnection {
 
-     public $conn;
+    public $conn;
+    public static $instance;
+
+    /**
+     * Get Instance of LDAPConnection
+     *
+     * @return object LDAPConnection new instance or self
+     */
+    public static function getInstance(){
+        if (!(self::$instance instanceof self)) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
     /**
      * LDAPConnection constructor. Connects to LDAP server
@@ -29,20 +41,20 @@ class LDAPConnection {
     /**
      * Binds to a specific directory with a given connection
      *
-     * @param bool $rdn Bind DN
-     * @param bool $password Password, if needed
+     * @param string|bool $rdn Bind DN
+     * @param string|bool $password Password, if needed
      * @return bool Boolean result
      */
     public function bind($rdn = false, $password = false) {
         if ($rdn && $password) {
-            if (ldap_bind($this->conn, $rdn, $password)) {
+            if (@ldap_bind($this->conn, $rdn, $password)) {
                 return true;
             } else {
                 return false;
             }
         } else {
             // Anonymous connection
-            if (ldap_bind($this->conn)) {
+            if (@ldap_bind($this->conn)) {
                 return true;
             } else {
                 return false;
@@ -74,19 +86,15 @@ class LDAPConnection {
      * @return bool|string New record's full DN or false
      */
     public function addRecord($dn, $data) {
-        $base_dn = Config::get('base_dn', LDAP_SETTINGS_PATH);
-        $full_dn = $dn.','.$base_dn;
-        if (ldap_add($this->conn, $full_dn, $data)) {
-            return $full_dn;
+        if (ldap_add($this->conn, $dn, $data)) {
+            return $dn;
         } else {
             return false;
         }
     }
 
     public function editRecord($dn, $data) {
-        $base_dn = Config::get('base_dn', LDAP_SETTINGS_PATH);
-        $full_dn = $dn.','.$base_dn;
-        if (ldap_modify($this->conn, $full_dn, $data)) {
+        if (ldap_modify($this->conn, $dn, $data)) {
             return true;
         } else {
             return false;
@@ -100,9 +108,7 @@ class LDAPConnection {
      * @return bool True, if the record is successfully deleted, else false
      */
     public function deleteRecord($dn) {
-        $base_dn = Config::get('base_dn', LDAP_SETTINGS_PATH);
-        $full_dn = $dn.','.$base_dn;
-        if (ldap_delete($this->conn, $full_dn)) {
+        if (ldap_delete($this->conn, $dn)) {
             return true;
         } else {
             return false;

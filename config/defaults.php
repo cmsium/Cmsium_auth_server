@@ -41,11 +41,6 @@ define("WATERMARK_CELL", "N130");
 define("ADMIN_WHITELIST", ['eeec1e618690fba21fd416df610da961']);
 
 /**
- * Set custom authentification class
- */
-define("AUTH_CUSTOM_CLASS","UserAuth");
-
-/**
  * Set custom headers class
  */
 define("HEADER_CUSTOM_CLASS","");
@@ -152,8 +147,14 @@ define('SMTP_NAME', 'Uklad Ukladoff');
 define('V_CODE_LIFETIME', 43200);
 
 /**
- * LDAP connection config file path
+ * Choose an auth method
+ * Available methods are: default, ldap
  */
-define("LDAP_SETTINGS_PATH", ROOTDIR."/config/config_ldap.ini");
+define('AUTH_METHOD', 'ldap');
+
+/**
+ * Set custom authentication class
+ */
+define("AUTH_CUSTOM_CLASS","UserAuth");
 
 //Github test comment

@@ -61,7 +61,7 @@ class Router {
     private function checkAuth($roles) {
         if (Cookie::checkToken()) {
             $token_raw = $_COOKIE['token'];
-            $auth = UserAuth::getInstance();
+            $auth = AuthHandler::getInstance();
             if (!$user_id = $auth->check($token_raw)) {
                 return false;
             }

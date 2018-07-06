@@ -12,10 +12,10 @@
             <homeDirectory>/<xsl:value-of select="item0"/></homeDirectory>
             <sn><xsl:value-of select="item1"/></sn>
             <uid><xsl:value-of select="item2"/></uid>
-            <uidNumber><xsl:value-of select="item2"/></uidNumber>
-            <givenName><xsl:value-of select="item3"/></givenName>
-            <mail><xsl:value-of select="item4"/></mail>
-            <userPassword><xsl:value-of select="item5"/></userPassword>
+            <uidNumber><xsl:value-of select="item3"/></uidNumber>
+            <givenName><xsl:value-of select="item4"/></givenName>
+            <mail><xsl:value-of select="item5"/></mail>
+            <userPassword><xsl:value-of select="item6"/></userPassword>
         </default_user>
     </xsl:template>
 

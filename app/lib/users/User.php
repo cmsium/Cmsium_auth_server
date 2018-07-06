@@ -78,6 +78,11 @@ class User {
                 return false;
             }
         }
+        if ((AUTH_METHOD === 'ldap') && LDAP_DELETE_ENTRY_ON_DESTROY) {
+            if (!UserLDAP::destroy($id)) {
+                return false;
+            }
+        }
         $conn->commit();
         return true;
     }
@@ -771,10 +776,15 @@ class User {
         if (!$id and !$data)
             return false;
         if (self::identifyUser($id)) {
-            $hashed_password = self::generatePassword($data['password']);
-            $conn = DBConnection::getInstance();
-            $query = "UPDATE bus_tickets SET ticket = '$hashed_password' WHERE id_user = '$id';";
-            return $conn->performQuery($query);
+            if ((AUTH_METHOD === 'ldap') && LDAP_SYNCHRONIZE_PASSWORDS) {
+                $hashed_password = self::generatePassword($data['password']);
+                $conn = DBConnection::getInstance();
+                $query = "UPDATE bus_tickets SET ticket = '$hashed_password' WHERE id_user = '$id';";
+                if (!$conn->performQuery($query)) {
+                    return false;
+                }
+            }
+            return UserLDAP::updatePassword($id, $data['password']);
         } else
             return false;
     }
@@ -896,6 +906,12 @@ class User {
             if (!$conn->performQuery($query_user_props)) {
                 $conn->rollback();
                 return false;
+            }
+            // Check if LDAP creation needed
+            if ((AUTH_METHOD === 'ldap') && LDAP_CREATE_ENTRY_ON_SIGNUP) {
+                if (!UserLDAP::create($user_id, $params_array)) {
+                    return false;
+                }
             }
             $conn->commit();
             return true;
@@ -1103,6 +1119,11 @@ WHERE draft_user_properties.user_id = '$user_id';";
         if (!$conn->performQuery($query)) {
             $conn->rollback();
             return false;
+        }
+        if ((AUTH_METHOD === 'ldap') && LDAP_CREATE_ENTRY_ON_SIGNUP) {
+            if (!UserLDAP::create($user_id, $user_data)) {
+                return false;
+            }
         }
         $conn->commit();
         return true;
