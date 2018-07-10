@@ -1075,19 +1075,12 @@ class Controller {
     // LDAP
 
     function testLDAP() {
-//        $ldap_conn = new LDAPConnection();
-//        var_dump($ldap_conn->search('(mail=*)', ['cn', 'mail']));
-//        $data = [
-//            'userPassword' => LDAPConnection::prepareMD5Password('Qwerty1234*')
-//        ];
-//        var_dump($ldap_conn->addRecord('cn=ukladoff', $data));
-//        var_dump($ldap_conn->editRecord('cn=ukladoff', $data));
-
-        $data = [
-            'password' => 'h3ll0w0rld',
-            'password_repeat' => 'h3ll0w0rld'
-        ];
-        User::updatePassword('eeec1e618690fba21fd416df610da961',$data);
+        $ldap = LDAPConnection::getInstance();
+        if ($ldap->conn) {
+            return "LDAP connected";
+        } else {
+            return "LDAP not connected";
+        }
     }
 
     // Transformers
