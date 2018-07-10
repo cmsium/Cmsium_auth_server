@@ -16,6 +16,7 @@ class UserLDAP {
         $ldap = LDAPConnection::getInstance();
         // Check if no such user was created
         $result = $ldap->search("(cn={$params_array['username']})");
+        $base_dn = Config::get('base_dn', LDAP_SETTINGS_PATH);
         if ($result['count'] === 0) {
             $data = [
                 $params_array['username'],
@@ -27,7 +28,7 @@ class UserLDAP {
                 LDAPConnection::prepareMD5Password($params_array['password'])
             ];
             $processed_data = LDAPConnection::getDataPreset('default_user', $data);
-            return $ldap->addRecord($result[0]['dn'], $processed_data);
+            return $ldap->addRecord("cn={$params_array['username']},$base_dn", $processed_data);
         } else {
             return false;
         }

@@ -908,7 +908,7 @@ class User {
                 return false;
             }
             // Check if LDAP creation needed
-            if ((AUTH_METHOD === 'ldap') && LDAP_CREATE_ENTRY_ON_SIGNUP) {
+            if ((AUTH_METHOD == 'ldap') && LDAP_CREATE_ENTRY_ON_SIGNUP) {
                 if (!UserLDAP::create($user_id, $params_array)) {
                     return false;
                 }

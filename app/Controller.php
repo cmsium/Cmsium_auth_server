@@ -125,8 +125,7 @@ class Controller {
                 ErrorHandler::throwException(PASSWORD_CHECK_ERROR);
             if (User::create($data)){
                 return null;
-            }
-            else
+            } else
                 ErrorHandler::throwException(CREATE_ERROR);
         }
         ErrorHandler::throwException(POST_DATA_ABSENT);
